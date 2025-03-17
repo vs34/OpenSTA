@@ -273,6 +273,8 @@ GraphDelayCalc::findDelays(Level level)
     delays_exist_ = true;
     incremental_ = true;
     debugPrint(debug_, "delay_calc", 1, "found %d delays", dcalc_count);
+
+
     stats.report("Delay calc");
   }
 }

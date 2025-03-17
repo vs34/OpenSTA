@@ -1,0 +1,11 @@
+/pkg/git/OpenSTA/cmake/CMakeFiles/sta_swig.dir
+/pkg/git/OpenSTA/cmake/CMakeFiles/sta_swig_swig_compilation.dir
+/pkg/git/OpenSTA/cmake/CMakeFiles/OpenSTA.dir
+/pkg/git/OpenSTA/cmake/CMakeFiles/sta.dir
+/pkg/git/OpenSTA/cmake/CMakeFiles/sta_tags.dir
+/pkg/git/OpenSTA/cmake/CMakeFiles/edit_cache.dir
+/pkg/git/OpenSTA/cmake/CMakeFiles/rebuild_cache.dir
+/pkg/git/OpenSTA/cmake/CMakeFiles/list_install_components.dir
+/pkg/git/OpenSTA/cmake/CMakeFiles/install.dir
+/pkg/git/OpenSTA/cmake/CMakeFiles/install/local.dir
+/pkg/git/OpenSTA/cmake/CMakeFiles/install/strip.dir

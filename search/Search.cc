@@ -69,6 +69,7 @@
 #include "Latches.hh"
 #include "Crpr.hh"
 #include "Genclks.hh"
+#include "modification/StaInterface.hh"    // Mod
 
 namespace sta {
 
@@ -479,6 +480,14 @@ Search::findPathEnds(ExceptionFrom *from,
                                                     corner, min_max,
                                                     sort_by_slack);
   sdc_->reportClkToClkMaxCycleWarnings();
+
+    // MODIFICATION
+
+    // change initalizing the the modification/StaInterface and modifing the graph  // modificaiton
+    // Initialize StaInterface with the current graph                               // modificaiton
+    StaInterface sta_interface(graph_);
+
+    sta_interface.updateGraph(); // Call updateGraph() to modify the graph          // modificaiton
   return path_ends;
 }
 

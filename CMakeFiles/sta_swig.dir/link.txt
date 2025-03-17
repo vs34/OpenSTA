@@ -1,0 +1,2 @@
+/usr/bin/ar qc sta_swig.a CMakeFiles/sta_swig.dir/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx.o
+/usr/bin/ranlib sta_swig.a

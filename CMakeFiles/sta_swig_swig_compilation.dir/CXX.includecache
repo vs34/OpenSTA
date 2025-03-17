@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/pkg/git/OpenSTA/app/StaApp.i
+tcl/Exception.i
+/pkg/git/OpenSTA/app/tcl/Exception.i
+tcl/StaTclTypes.i
+/pkg/git/OpenSTA/app/tcl/StaTclTypes.i
+dcalc/DelayCalc.i
+/pkg/git/OpenSTA/app/dcalc/DelayCalc.i
+graph/Graph.i
+/pkg/git/OpenSTA/app/graph/Graph.i
+liberty/Liberty.i
+/pkg/git/OpenSTA/app/liberty/Liberty.i
+network/Network.i
+/pkg/git/OpenSTA/app/network/Network.i
+network/NetworkEdit.i
+/pkg/git/OpenSTA/app/network/NetworkEdit.i
+parasitics/Parasitics.i
+/pkg/git/OpenSTA/app/parasitics/Parasitics.i
+power/Power.i
+/pkg/git/OpenSTA/app/power/Power.i
+sdc/Sdc.i
+/pkg/git/OpenSTA/app/sdc/Sdc.i
+sdf/Sdf.i
+/pkg/git/OpenSTA/app/sdf/Sdf.i
+search/Search.i
+/pkg/git/OpenSTA/app/search/Search.i
+util/Util.i
+/pkg/git/OpenSTA/app/util/Util.i
+spice/WriteSpice.i
+/pkg/git/OpenSTA/app/spice/WriteSpice.i
+verilog/Verilog.i
+/pkg/git/OpenSTA/app/verilog/Verilog.i
+

@@ -235,6 +235,8 @@ set(STA_SOURCE
   
   verilog/VerilogReader.cc
   verilog/VerilogWriter.cc
+
+  modification/StaInterface.cc     # modification 
   )
 
 # Source files.
