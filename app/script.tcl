@@ -17,5 +17,7 @@ set_input_delay -clock CLK 1 [get_ports {IN1 IN2 IN3 IN4 IN5 IN6 IN7 IN8 IN9}]
 set_output_delay -clock CLK 1 [get_ports {OUT}]
 
 # Perform timing analysis
-report_checks -path_delay min
-
+report_checks -path_delay min -digit 9
+report_checks -path_delay max -digit 9
+report_checks -fields slew -digit 9
+report_checks -path_delay max -digit 9
