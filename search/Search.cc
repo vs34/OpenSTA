@@ -485,7 +485,7 @@ Search::findPathEnds(ExceptionFrom *from,
 
     // change initalizing the the modification/StaInterface and modifing the graph  // modificaiton
     // Initialize StaInterface with the current graph                               // modificaiton
-    StaInterface sta_interface(graph_);
+    StaInterface sta_interface(graph_,network_);
 
     sta_interface.updateGraph(); // Call updateGraph() to modify the graph          // modificaiton
   return path_ends;

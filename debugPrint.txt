@@ -1,0 +1,254 @@
+./power/Power.cc:  debugPrint(debug_, "power_activity", 3, "set %s %.2e %.2f %s",
+./power/Power.cc:  debugPrint(debug_, "power_activity", 3, "visit %s",
+./power/Power.cc:            debugPrint(debug_, "power_activity", 3, "gated_clk %s %.2e %.2f",
+./power/Power.cc:        debugPrint(debug_, "power_activity", 3, "pending seq %s",
+./power/Power.cc:      debugPrint(debug_, "power_activity", 3, "var %s %.3e * %.3f = %.3e",
+./power/Power.cc:        debugPrint(debug_, "power_activity", 1, "Pass %d change %.2f",
+./power/Power.cc:      debugPrint(debug_, "power_activity", 3, "seed %s",
+./power/Power.cc:          debugPrint(debug_, "power_reg", 1, "enqueue reg output %s",
+./power/Power.cc:      debugPrint(debug_, "power", 2, "internal input %s/%s cap %s",
+./power/Power.cc:      debugPrint(debug_, "power", 2, "       when  act/ns duty  energy    power");
+./power/Power.cc:        debugPrint(debug_, "power", 2,  " %3s %6s  %.2f  %.2f %9.2e %9.2e %s",
+./power/Power.cc:  debugPrint(debug_, "power", 2, "internal output %s/%s cap %s",
+./power/Power.cc:  debugPrint(debug_, "power", 2,
+./power/Power.cc:    debugPrint(debug_, "power", 2,  "%3s -> %-3s %6s  %.3f %.3f %.3f %9.2e %9.2e %s",
+./power/Power.cc:        debugPrint(debug_, "power", 2, "switching %s/%s activity = %.2e volt = %.2f %.3e",
+./power/Power.cc:      debugPrint(debug_, "power", 2, "leakage %s %s %.3e * %.2f",
+./power/Power.cc:      debugPrint(debug_, "power", 2, "leakage -- %s %.3e",
+./power/Power.cc:    debugPrint(debug_, "power", 2, "leakage cell %s %.3e * %.2f",
+./power/Power.cc:  debugPrint(debug_, "power", 2, "leakage %s %.3e",
+./power/VcdReader.cc:    debugPrint(debug_, "read_vcd_activities", 2, "id %s pin %s",
+./power/VcdReader.cc:          debugPrint(debug_, "read_vcd_activities", 3, "%s time %" PRIu64 " value %c",
+./power/VcdReader.cc:          debugPrint(debug_, "read_vcd_activities", 3, "%s time %" PRIu64 " value %c",
+./power/VcdReader.cc:          debugPrint(debug_, "read_vcd_activities", 1,
+./power/SaifReader.cc:        debugPrint(debug_, "read_saif", 2,
+./power/SaifReader.cc:  debugPrint(debug_, "saif_name", 1, "token %s -> %s", token, unescaped.c_str());
+./parasitics/ReduceParasitics.cc:  debugPrint(debug_, "parasitic_reduce", 2,
+./parasitics/ReduceParasitics.cc:          debugPrint(debug_, "parasitic_reduce", 2, " loop detected thru resistor %zu",
+./parasitics/ReduceParasitics.cc:  debugPrint(debug_, "parasitic_reduce", 3,
+./parasitics/ReduceParasitics.cc:    debugPrint(sta->debug(), "parasitic_reduce", 1, "Reduce driver %s %s %s",
+./parasitics/ReduceParasitics.cc:      debugPrint(debug_, "parasitic_reduce", 2, " Load %s elmore=%.3g",
+./parasitics/ReduceParasitics.cc:    debugPrint(sta->debug(), "parasitic_reduce", 1, "Reduce driver %s",
+./parasitics/ReduceParasitics.cc:    debugPrint(debug_, "parasitic_reduce", 3, " res i=%.3g", branch_i);
+./parasitics/ReduceParasitics.cc:      debugPrint(debug_, "parasitic_reduce", 3, " moment %s %d %.3g",
+./parasitics/ReduceParasitics.cc:    debugPrint(debug_, "parasitic_reduce", 3, " load %s p1=%.3g k1=%.3g",
+./parasitics/ReduceParasitics.cc:    debugPrint(debug_, "parasitic_reduce", 3,
+./sdc/Sdc.cc:  debugPrint(debug_, "loop", 2, "Loop false path");
+./sdc/Sdc.cc:  debugPrint(debug_, "levelize", 2, " %s", network_->pathName(pin));
+./sdc/Sdc.cc:  debugPrint(debug_, "exception_merge", 1, "add exception for %s",
+./sdc/Sdc.cc:    debugPrint(debug_, "exception_merge", 1, " split exception for %s",
+./sdc/Sdc.cc:    debugPrint(debug_, "exception_merge", 1, " split exception for %s",
+./sdc/Sdc.cc:    debugPrint(debug_, "exception_merge", 1, " split exception for %s",
+./sdc/Sdc.cc:    debugPrint(debug_, "exception_merge", 1, " split exception for %s",
+./sdc/Sdc.cc:  debugPrint(debug_, "exception_merge", 1, "find matches for %s",
+./sdc/Sdc.cc:  debugPrint(debug_, "exception_merge", 3,
+./sdc/Sdc.cc:	  debugPrint(debug_, "exception_merge", 1, "merge %s",
+./sdc/Sdc.cc:	  debugPrint(debug_, "exception_merge", 1, " with %s",
+./sdc/Sdc.cc:  debugPrint(debug_, "exception_merge", 2, "delete %s",
+./sdc/Sdc.cc:  debugPrint(debug_, "exception_merge", 3,
+./sdc/Sdc.cc:      debugPrint(debug_, "exception_match", 3, "reset match %s",
+./sdc/CycleAccting.cc:  debugPrint(debug, "cycle_acct", 1, "%s -> %s",
+./sdc/CycleAccting.cc:	  debugPrint(debug, "cycle_acct", 1, " setup = %s, required = %s",
+./sdc/CycleAccting.cc:	  debugPrint(debug, "cycle_acct", 1, " hold = %s, required = %s",
+./sdc/CycleAccting.cc:	  debugPrint(debug, "cycle_acct", 1,
+./sdc/CycleAccting.cc:	debugPrint(debug, "cycle_acct", 2, " %s src cycle %d %s + %s = %s",
+./sdc/CycleAccting.cc:	debugPrint(debug, "cycle_acct", 2, " %s tgt cycle %d %s + %s = %s",
+./sdc/CycleAccting.cc:	    debugPrint(debug, "cycle_acct", 2,
+./sdc/CycleAccting.cc:	    debugPrint(debug, "cycle_acct", 2,
+./sdc/CycleAccting.cc:	    debugPrint(debug, "cycle_acct", 2,
+./sdc/CycleAccting.cc:	    debugPrint(debug, "cycle_acct", 2,
+./sdc/CycleAccting.cc:    debugPrint(debug, "cycle_acct", 1,
+./spice/WritePathSpice.cc:	debugPrint(debug_, "write_spice", 2, "cell %s", cell->name());
+./spice/WriteSpice.cc:  debugPrint(debug_, "write_spice", 2, "subckt %s", cell->name());
+./spice/WriteSpice.cc:    debugPrint(debug_, "write_spice", 2, " port %s%s",
+./graph/Graph.cc:      debugPrint(debug_, "graph", 1, "ignoring isolated driver %s",
+./include/sta/Debug.hh:#define debugPrint(debug, what, level, ...) \
+./dcalc/LumpedCapDelayCalc.cc:  debugPrint(debug_, "delay_calc", 3,
+./dcalc/GraphDelayCalc.cc:  debugPrint(debug_, "delay_calc", 1, "delays invalid");
+./dcalc/GraphDelayCalc.cc:  debugPrint(debug_, "delay_calc", 2, "delay invalid %s",
+./dcalc/GraphDelayCalc.cc:    debugPrint(debug_, "delay_calc", 1, "find delays to level %d", level);
+./dcalc/GraphDelayCalc.cc:    debugPrint(debug_, "delay_calc", 1, "found %d delays", dcalc_count);
+./dcalc/GraphDelayCalc.cc:  debugPrint(debug_, "delay_calc", 2, "seed driver slew %s",
+./dcalc/GraphDelayCalc.cc:  debugPrint(debug_, "delay_calc", 2, "seed load slew %s",
+./dcalc/GraphDelayCalc.cc:  debugPrint(debug_, "delay_calc", 2, "  driver cell %s %s",
+./dcalc/GraphDelayCalc.cc:  debugPrint(debug_, "delay_calc", 3, "  %s %s -> %s %s (%s)",
+./dcalc/GraphDelayCalc.cc:    debugPrint(debug_, "delay_calc", 3,
+./dcalc/GraphDelayCalc.cc:  debugPrint(debug_, "delay_calc", 2, "find delays %s (%s)",
+./dcalc/GraphDelayCalc.cc:    debugPrint(debug_, "delay_calc", 3, "multi-driver net");
+./dcalc/GraphDelayCalc.cc:          debugPrint(debug_, "delay_calc", 3, " %s",
+./dcalc/GraphDelayCalc.cc:  debugPrint(debug_, "delay_calc", 2, "find latch D->Q %s",
+./dcalc/GraphDelayCalc.cc:  debugPrint(debug_, "delay_calc", 3,
+./dcalc/GraphDelayCalc.cc:  debugPrint(debug_, "delay_calc", 3,
+./dcalc/GraphDelayCalc.cc:      debugPrint(debug_, "delay_calc", 3,
+./dcalc/GraphDelayCalc.cc:  debugPrint(debug_, "delay_calc", 2, "find check %s %s -> %s",
+./dcalc/GraphDelayCalc.cc:	  debugPrint(debug_, "delay_calc", 3,
+./dcalc/GraphDelayCalc.cc:	  debugPrint(debug_, "delay_calc", 3,
+./dcalc/GraphDelayCalc.cc:	  debugPrint(debug_, "delay_calc", 3,
+./dcalc/ArnoldiDelayCalc.cc:	  debugPrint(debug_, "arnoldi", 1, "err, pr_solve1, va<v1");
+./dcalc/ArnoldiDelayCalc.cc:	debugPrint(debug_, "arnoldi", 1, "err, pr_solve1, va>v1");
+./dcalc/ArnoldiDelayCalc.cc:     debugPrint(debug, "arnoldi", 1, "y f %g %g", y, f);
+./dcalc/ArnoldiDelayCalc.cc:    debugPrint(debug_, "arnoldi", 1, "ra_solve_for_s p %g tlohi %s err %s",
+./dcalc/ArnoldiDelayCalc.cc:  debugPrint(debug_, "arnoldi", 1, "ctot=%s",
+./dcalc/ArnoldiDelayCalc.cc:    debugPrint(debug_, "arnoldi", 1, "at r=%s s=%s",
+./dcalc/ArnoldiDelayCalc.cc:    debugPrint(debug_, "arnoldi", 1, "table slew (in_slew %s ctot %s) = %s",
+./dcalc/ArnoldiDelayCalc.cc:    debugPrint(debug_, "arnoldi", 1, "tlohi %s %s",
+./dcalc/ArnoldiDelayCalc.cc:	debugPrint(debug_, "arnoldi", 1,
+./dcalc/ArnoldiDelayCalc.cc:      debugPrint(debug_, "arnoldi", 1, "new mvs  s = %s",
+./dcalc/ArnoldiDelayCalc.cc:  debugPrint(debug_, "arnoldi", 1, "r %s s %s ceff_time %s ceff %s",
+./dcalc/CcsCeffDelayCalc.cc:      debugPrint(debug_, "ccs_dcalc", 1, "%s %s",
+./dcalc/CcsCeffDelayCalc.cc:  debugPrint(debug_, "ccs_dcalc", 2,
+./dcalc/CcsCeffDelayCalc.cc:    debugPrint(debug_, "ccs_dcalc", 2, "iteration %d", iter);
+./dcalc/CcsCeffDelayCalc.cc:      debugPrint(debug_, "ccs_dcalc", 2, "ceff %s",
+./dcalc/CcsCeffDelayCalc.cc:    debugPrint(debug_, "ccs_dcalc", 2,
+./dcalc/CcsCeffDelayCalc.cc:  debugPrint(debug_, "ccs_dcalc", 2,
+./dcalc/CcsCeffDelayCalc.cc:  debugPrint(debug_, "ccs_dcalc", 2,
+./dcalc/DmpCeff.cc:  debugPrint(debug_, "dmp_ceff", 3, "    t0 = %s dt = %s ceff = %s",
+./dcalc/DmpCeff.cc:  debugPrint(debug_, "dmp_ceff", 3, "Using DMP cap");
+./dcalc/DmpCeff.cc:  debugPrint(debug_, "dmp_ceff", 3, "    ceff = %s",
+./dcalc/DmpCeff.cc:  debugPrint(debug_, "dmp_ceff", 3, "Using DMP Pi");
+./dcalc/DmpCeff.cc:  debugPrint(debug_, "dmp_ceff", 3, "Using DMP C2=0");
+./dcalc/DmpCeff.cc:  debugPrint(debug_, "dmp_ceff", 3,
+./dcalc/ArnoldiReduce.cc:    debugPrint(debug_, "arnoldi", 1, "net %s loop",
+./dcalc/ArnoldiReduce.cc:	debugPrint(debug_, "arnoldi", 1,
+./dcalc/ArnoldiReduce.cc:      debugPrint(debug_, "arnoldi", 1, "T%d,P%ld c=%s",
+./dcalc/ArnoldiReduce.cc:        debugPrint(debug_, "arnoldi", 1, " term %d", p->tindex);
+./dcalc/ArnoldiReduce.cc:	debugPrint(debug_, "arnoldi", 1, "  from T%d,P%ld r=%s",
+./dcalc/ArnoldiReduce.cc:      debugPrint(debug_, "arnoldi", 1, "outV[%d] = T%d", i, outV[i]);
+./dcalc/ArnoldiReduce.cc:  debugPrint(debug_, "arnoldi", 1, "ctot = %s",
+./dcalc/PrimaDelayCalc.cc:        debugPrint(debug_, "ccs_dcalc", 1, "%s %s",
+./dcalc/PrimaDelayCalc.cc:  debugPrint(debug_, "ccs_dcalc", 1, "time step %s", delayAsString(time_step_, this));
+./dcalc/PrimaDelayCalc.cc:    debugPrint(debug_, "ccs_dcalc", 3, "%s ceff %s VDrvr %.4f Idrvr %s",
+./dcalc/PrimaDelayCalc.cc:        debugPrint(debug_, "ccs_dcalc", 1, "pin %s node %lu",
+./dcalc/PrimaDelayCalc.cc:        debugPrint(debug_, "ccs_measure", 1, "node %lu cross %.2f %s",
+./dcalc/PrimaDelayCalc.cc:    debugPrint(debug_, "ccs_dcalc", 2,
+./dcalc/PrimaDelayCalc.cc:      debugPrint(debug_, "ccs_dcalc", 2,
+./sdf/SdfReader.cc:  debugPrint(debug_, "sdf_name", 1, "unescape %s -> %s",
+./search/Sim.cc:  debugPrint(debug_, "sim", 4, "find sense pin %s %s",
+./search/Sim.cc:  debugPrint(debug_, "sim", 4, " %s", timingSenseString(sense));
+./search/Sim.cc:    debugPrint(debug_, "sim", 2, "case pin %s = %c",
+./search/Sim.cc:    debugPrint(debug_, "sim", 2, "func pin %s = %c",
+./search/Sim.cc:    debugPrint(debug_, "sim", 2, "network constant pin %s = %c",
+./search/Sim.cc:	debugPrint(debug_, "sim", 2, "pin %s remove prop constant",
+./search/Sim.cc:    debugPrint(debug_, "sim", 3, "pin %s = %c",
+./search/Sim.cc:  debugPrint(debug_, "sim", 2, "eval %s", network_->pathName(inst));
+./search/Sim.cc:              debugPrint(debug_, "sim", 2, " %s tri_en=1 %s = %c",
+./search/Sim.cc:              debugPrint(debug_, "sim", 2, " %s seq %s = %c",
+./search/Sim.cc:              debugPrint(debug_, "sim", 2, " %s %s = %c",
+./search/Sim.cc:          debugPrint(debug_, "sim", 2, " %s gated_clk = %c",
+./search/Sim.cc:  debugPrint(debug_, "sim", 4, "clear %s",
+./search/Sim.cc:  debugPrint(debug_, "sim", 4, "annotate %s %s",
+./search/CheckMinPulseWidths.cc:      debugPrint(debug, "mpw", 1, "check mpw %s", vertex->name(sdc_network));
+./search/CheckMinPulseWidths.cc:  debugPrint(sta->debug(), "mpw", 3, " open  %s",
+./search/CheckMinPulseWidths.cc:  debugPrint(sta->debug(), "mpw", 3, " close %s",
+./search/CheckMinPulseWidths.cc:      debugPrint(sta->debug(), "mpw", 3, " match %s",
+./search/VisitPathGroupVertices.cc:    debugPrint(debug_, "visit_path_group", 1, "visit %s",
+./search/VisitPathGroupVertices.cc:	debugPrint(debug_, "visit_path_group", 2, "match %s %s -> %s %s",
+./search/VisitPathGroupVertices.cc:	  debugPrint(debug_, "visit_path_group", 2, 
+./search/Search.cc:  debugPrint(debug_, "search", 1, "delete paths");
+./search/Search.cc:    debugPrint(debug_, "search", 1, "find arrivals pass %d", pass);
+./search/Search.cc:    debugPrint(debug_, "search", 1, "found %d arrivals", arrival_count);
+./search/Search.cc:    debugPrint(debug_, "search", 1, "arrivals invalid");
+./search/Search.cc:  debugPrint(debug_, "search", 1, "requireds invalid");
+./search/Search.cc:    debugPrint(debug_, "search", 2, "arrival invalid %s",
+./search/Search.cc:    debugPrint(debug_, "search", 2, "required invalid %s",
+./search/Search.cc:    debugPrint(debug_, "search", 1, "find clk arrivals");
+./search/Search.cc:    debugPrint(debug_, "search", 1, "find arrivals pass %d", pass);
+./search/Search.cc:  debugPrint(debug_, "search", 1, "find arrivals to level %d", level);
+./search/Search.cc:  debugPrint(debug_, "search", 1, "found %u arrivals", arrival_count);
+./search/Search.cc:  debugPrint(debug_, "search", 2, "find arrivals %s",
+./search/Search.cc:    debugPrint(debug_, "search", 2, "arrival seed unclked reg clk %s",
+./search/Search.cc:    debugPrint(debug_, "search", 4, "arrival changed");
+./search/Search.cc:  debugPrint(debug_, "search", 3, " %s",
+./search/Search.cc:  debugPrint(debug_, "search", 3, "  %s -> %s %s",
+./search/Search.cc:  debugPrint(debug_, "search", 3, "  from tag: %s",
+./search/Search.cc:  debugPrint(debug_, "search", 3, "  to tag  : %s",
+./search/Search.cc:    debugPrint(debug_, "search", 3, "   %s + %s = %s %s %s",
+./search/Search.cc:	debugPrint(debug_, "search", 4, "  cmp %s %s - %s = %s",
+./search/Search.cc:	  debugPrint(debug_, "search", 3, "  pruned %s",
+./search/Search.cc:      debugPrint(debug_, "search", 2, "arrival seed unclked root %s",
+./search/Search.cc:    debugPrint(debug_, "search", 2, "arrival enqueue %s",
+./search/Search.cc:    debugPrint(debug_, "search", 2, "arrival seed clk %s pin %s",
+./search/Search.cc:  debugPrint(debug_, "search", 2,
+./search/Search.cc:	debugPrint(debug_, "search", 3, " %s",
+./search/Search.cc:  debugPrint(debug_, "search", 1, "find requireds to level %d", level);
+./search/Search.cc:  debugPrint(debug_, "search", 1, "found %d requireds", required_count);
+./search/Search.cc:	debugPrint(debug_, "endpoint", 2, "insert %s",
+./search/Search.cc:	debugPrint(debug_, "endpoint", 2, "insert %s",
+./search/Search.cc:    debugPrint(debug_, "endpoint", 2, "invalid %s",
+./search/Search.cc:  debugPrint(debug_, "search", 2, "required seed %s",
+./search/Search.cc:	  debugPrint(debug, "search", 3, "required save %s -> %s",
+./search/Search.cc:	debugPrint(debug, "search", 3, "required save MIA -> %s",
+./search/Search.cc:  debugPrint(debug_, "search", 2, "find required %s",
+./search/Search.cc:    debugPrint(debug_, "search", 3, "  %s -> %s %s",
+./search/Search.cc:    debugPrint(debug_, "search", 3, "  from tag %2u: %s",
+./search/Search.cc:      debugPrint(debug_, "search", 3, "  to tag   %2u: %s",
+./search/Search.cc:      debugPrint(debug_, "search", 3, "  %s - %s = %s %s %s",
+./search/Search.cc:	    debugPrint(debug_, "search", 3, "  to tag   %2u: %s",
+./search/Search.cc:	    debugPrint(debug_, "search", 3, "  %s - %s = %s %s %s",
+./search/Search.cc:    debugPrint(debug_, "tns", 2, "tns invalid %s",
+./search/Search.cc:      debugPrint(debug_, "tns", 2, "update tns %s",
+./search/Search.cc:    debugPrint(debug_, "tns", 3, "tns+ %s %s",
+./search/Search.cc:    debugPrint(debug_, "tns", 3, "tns- %s %s",
+./search/Search.cc:      debugPrint(debug_, "search", 2, "tns update required %s",
+./search/Genclks.cc:    debugPrint(debug_, "genclk", 1, "find generated clk insertion delays");
+./search/Genclks.cc:          debugPrint(debug_, "genclk", 2, " %s master clk %s",
+./search/Genclks.cc:                debugPrint(debug_, "genclk", 2, " %s master clk %s",
+./search/Genclks.cc:      debugPrint(debug_, "genclk", 2, "gen clk %s fanin %s",
+./search/Genclks.cc:  debugPrint(debug_, "genclk", 2, "find gen clk %s insertion",
+./search/Genclks.cc:	debugPrint(debug_, "genclk", 2, " found feedback edge %s -> %s",
+./search/Genclks.cc:      debugPrint(debug_, "genclk", 2, " seed src pin %s",
+./search/Genclks.cc:  debugPrint(debug_, "genclk", 2, "find gen clk insert arrival %s",
+./search/Genclks.cc:	  debugPrint(debug_, "genclk", 2, "  %s insertion %s %s %s",
+./search/Sta.cc:    debugPrint(debug_, "search", 1, "resurrect pruned required %s fanout %d",
+./search/Sta.cc:  debugPrint(debug_, "fanin", 1, "%s",
+./search/Sta.cc:  debugPrint(debug_, "fanout", 1, "%s",
+./search/Bfs.cc:  debugPrint(debug_, "bfs", 2, "enqueue %s", vertex->name(sdc_network_));
+./search/Crpr.cc:    debugPrint(debug_, "crpr", 2, "crpr pin %s",
+./search/Crpr.cc:    debugPrint(debug_, "crpr", 2, " src delta %s",
+./search/Crpr.cc:    debugPrint(debug_, "crpr", 2, " tgt delta %s",
+./search/Crpr.cc:    debugPrint(debug_, "crpr", 2, " %s delta %s",
+./search/MakeTimingModel.cc:    debugPrint(debug, "make_timing_model", 2, "%s -> %s clock %s %s %s %s",
+./search/MakeTimingModel.cc:          debugPrint(debug_, "make_timing_model", 2, "%s %s %s -> clock %s %s",
+./search/MakeTimingModel.cc:        debugPrint(debug_, "make_timing_model", 2, "%s -> %s %s delay %s",
+./search/ClkNetwork.cc:  debugPrint(debug_, "clk_network", 1, "clk network invalid");
+./search/ClkNetwork.cc:  debugPrint(debug_, "clk_network", 1, "find clk network");
+./search/VisitPathEnds.cc:    debugPrint(debug_, "search", 2, "find end slack %s",
+./search/WorstSlack.cc:  debugPrint(debug_, "wns", 3, "init queue");
+./search/WorstSlack.cc:  debugPrint(debug_, "wns", 3, "threshold %s",
+./search/WorstSlack.cc:    debugPrint(debug_, "wns", 3, "sort queue");
+./search/WorstSlack.cc:    debugPrint(debug_, "wns", 3, "threshold %s",
+./search/WorstSlack.cc:  debugPrint(debug_, "wns", 3, "find worst in queue");
+./search/WorstSlack.cc:      debugPrint(debug_, "wns", 3, "insert %s %s",
+./search/WorstSlack.cc:      debugPrint(debug_, "wns", 3, "delete %s %s",
+./search/WorstSlack.cc:  debugPrint(debug_, "wns", 3, "%s %s",
+./search/Levelize.cc:  debugPrint(debug_, "levelize", 1, "levelize");
+./search/Levelize.cc:      debugPrint(debug_, "levelize", 2, "root %s", vertex->name(sdc_network_));
+./search/Levelize.cc:  debugPrint(debug_, "levelize", 3, "level %d %s",
+./search/Levelize.cc:  debugPrint(debug_, "levelize", 2, "Loop edge %s -> %s (%s)",
+./search/Levelize.cc:  debugPrint(debug_, "loop", 2, "Loop");
+./search/Levelize.cc:      debugPrint(debug_, "loop", 2, " %s -> %s",
+./search/Levelize.cc:  debugPrint(debug_, "loop", 2, " %s -> %s",
+./search/Levelize.cc:  debugPrint(debug_, "levelize", 1, "levels invalid");
+./search/Levelize.cc:  debugPrint(debug_, "levelize", 1, "level invalid from %s",
+./search/Levelize.cc:  debugPrint(debug_, "levelize", 1, "invalid relevelize from %s",
+./search/Levelize.cc:    debugPrint(debug_, "levelize", 1, "relevelize from %s",
+./search/Latches.cc:    debugPrint(debug_, "latch", 1, "latch data %s %s enable %s",
+./search/PathEnum.cc:  debugPrint(debug_, "path_enum", 1, "insert %s",
+./search/PathEnum.cc:  debugPrint(debug_, "path_enum", 2, "diversion %s %s %s",
+./search/PathEnum.cc:      debugPrint(debug_, "path_enum", 1,
+./search/PathEnum.cc:  debugPrint(debug_, "path_enum", 3, "visit fanin %s -> %s %s %s",
+./search/PathEnum.cc:  debugPrint(debug_, "path_enum", 2, "prune queue");
+./search/PathEnum.cc:      debugPrint(debug_, "path_enum", 5, "update arrival %s %s %s -> %s",
+./search/PathGroup.cc:	  debugPrint(debug, "path_enum", 5, "insert %s %s %s %d",
+./search/PathGroup.cc:	  debugPrint(debug, "path_enum", 5, "prune %s %s %s %d",
+./search/ClkSkew.cc:	    debugPrint(debug_, "clk_skew", 2,
+./liberty/LibertyReader.cc:    debugPrint(debug_, "liberty", 1, "cell %s", name);
+./liberty/LibertyReader.cc:	  debugPrint(debug_, "liberty", 1, "scaled cell %s %s",
+./liberty/LibertyReader.cc:        debugPrint(debug_, "liberty", 2, "  timing %s -> %s",
+./liberty/LibertyReader.cc:	debugPrint(debug_, "liberty", 2, "  power %s -> %s",
+./liberty/LibertyReader.cc:	  debugPrint(debug_, "liberty", 1, " port %s", port_name);
+./liberty/LibertyReader.cc:	  debugPrint(debug_, "liberty", 1, " port %s", name);
+./liberty/LibertyReader.cc:	  debugPrint(debug_, "liberty", 1, " port %s", name);
+./liberty/LibertyReader.cc:	  debugPrint(debug_, "liberty", 1, " bus %s", name);
+./liberty/LibertyReader.cc:	debugPrint(debug_, "liberty", 1, " bundle %s", name);
+./liberty/Liberty.cc:  debugPrint(debug, "liberty_latch", 1,

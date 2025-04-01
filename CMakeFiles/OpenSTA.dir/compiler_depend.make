@@ -14867,6 +14867,7 @@ CMakeFiles/OpenSTA.dir/modification/StaInterface.cc.o: modification/StaInterface
   include/sta/Map.hh \
   include/sta/MinMax.hh \
   include/sta/MinMaxValues.hh \
+  include/sta/Network.hh \
   include/sta/NetworkClass.hh \
   include/sta/ObjectId.hh \
   include/sta/ObjectTable.hh \
