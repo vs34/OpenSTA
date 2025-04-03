@@ -14855,6 +14855,7 @@ CMakeFiles/OpenSTA.dir/modification/MlModel.cc.o: modification/MlModel.cc \
   /usr/local/include/nlohmann/thirdparty/hedley/hedley_undef.hpp
 
 CMakeFiles/OpenSTA.dir/modification/StaInterface.cc.o: modification/StaInterface.cc \
+  include/sta/ConcreteLibrary.hh \
   include/sta/Delay.hh \
   include/sta/DelayFloat.hh \
   include/sta/Error.hh \
@@ -14862,6 +14863,7 @@ CMakeFiles/OpenSTA.dir/modification/StaInterface.cc.o: modification/StaInterface
   include/sta/GraphClass.hh \
   include/sta/Hash.hh \
   include/sta/Iterator.hh \
+  include/sta/Liberty.hh \
   include/sta/LibertyClass.hh \
   include/sta/Machine.hh \
   include/sta/Map.hh \
@@ -14874,6 +14876,8 @@ CMakeFiles/OpenSTA.dir/modification/StaInterface.cc.o: modification/StaInterface
   include/sta/PathPrev.hh \
   include/sta/PinPair.hh \
   include/sta/Report.hh \
+  include/sta/RiseFallMinMax.hh \
+  include/sta/RiseFallValues.hh \
   include/sta/SdcClass.hh \
   include/sta/SearchClass.hh \
   include/sta/Set.hh \

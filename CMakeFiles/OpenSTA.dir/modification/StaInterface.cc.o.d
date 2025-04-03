@@ -592,4 +592,8 @@ CMakeFiles/OpenSTA.dir/modification/StaInterface.cc.o: \
  /usr/local/include/fdeep/layers/upsampling_1d_layer.hpp \
  /usr/local/include/fdeep/layers/upsampling_2d_layer.hpp \
  /usr/local/include/fdeep/layers/zero_padding_3d_layer.hpp \
- /usr/local/include/fdeep/model.hpp
+ /usr/local/include/fdeep/model.hpp \
+ /pkg/git/OpenSTA/include/sta/Liberty.hh \
+ /pkg/git/OpenSTA/include/sta/RiseFallMinMax.hh \
+ /pkg/git/OpenSTA/include/sta/ConcreteLibrary.hh \
+ /pkg/git/OpenSTA/include/sta/RiseFallValues.hh

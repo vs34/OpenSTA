@@ -14911,6 +14911,7 @@ CMakeFiles/OpenSTA.dir/modification/MlModel.cc.o
 
 CMakeFiles/OpenSTA.dir/modification/StaInterface.cc.o
  /pkg/git/OpenSTA/modification/StaInterface.cc
+ /pkg/git/OpenSTA/include/sta/ConcreteLibrary.hh
  /pkg/git/OpenSTA/include/sta/Delay.hh
  /pkg/git/OpenSTA/include/sta/DelayFloat.hh
  /pkg/git/OpenSTA/include/sta/Error.hh
@@ -14918,6 +14919,7 @@ CMakeFiles/OpenSTA.dir/modification/StaInterface.cc.o
  /pkg/git/OpenSTA/include/sta/GraphClass.hh
  /pkg/git/OpenSTA/include/sta/Hash.hh
  /pkg/git/OpenSTA/include/sta/Iterator.hh
+ /pkg/git/OpenSTA/include/sta/Liberty.hh
  /pkg/git/OpenSTA/include/sta/LibertyClass.hh
  /pkg/git/OpenSTA/include/sta/Machine.hh
  /pkg/git/OpenSTA/include/sta/Map.hh
@@ -14930,6 +14932,8 @@ CMakeFiles/OpenSTA.dir/modification/StaInterface.cc.o
  /pkg/git/OpenSTA/include/sta/PathPrev.hh
  /pkg/git/OpenSTA/include/sta/PinPair.hh
  /pkg/git/OpenSTA/include/sta/Report.hh
+ /pkg/git/OpenSTA/include/sta/RiseFallMinMax.hh
+ /pkg/git/OpenSTA/include/sta/RiseFallValues.hh
  /pkg/git/OpenSTA/include/sta/SdcClass.hh
  /pkg/git/OpenSTA/include/sta/SearchClass.hh
  /pkg/git/OpenSTA/include/sta/Set.hh
