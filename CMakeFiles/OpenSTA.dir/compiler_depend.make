@@ -14875,6 +14875,7 @@ CMakeFiles/OpenSTA.dir/modification/StaInterface.cc.o: modification/StaInterface
   include/sta/ObjectTable.hh \
   include/sta/PathPrev.hh \
   include/sta/PinPair.hh \
+  include/sta/PortDirection.hh \
   include/sta/Report.hh \
   include/sta/RiseFallMinMax.hh \
   include/sta/RiseFallValues.hh \

@@ -14931,6 +14931,7 @@ CMakeFiles/OpenSTA.dir/modification/StaInterface.cc.o
  /pkg/git/OpenSTA/include/sta/ObjectTable.hh
  /pkg/git/OpenSTA/include/sta/PathPrev.hh
  /pkg/git/OpenSTA/include/sta/PinPair.hh
+ /pkg/git/OpenSTA/include/sta/PortDirection.hh
  /pkg/git/OpenSTA/include/sta/Report.hh
  /pkg/git/OpenSTA/include/sta/RiseFallMinMax.hh
  /pkg/git/OpenSTA/include/sta/RiseFallValues.hh

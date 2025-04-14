@@ -596,4 +596,5 @@ CMakeFiles/OpenSTA.dir/modification/StaInterface.cc.o: \
  /pkg/git/OpenSTA/include/sta/Liberty.hh \
  /pkg/git/OpenSTA/include/sta/RiseFallMinMax.hh \
  /pkg/git/OpenSTA/include/sta/ConcreteLibrary.hh \
- /pkg/git/OpenSTA/include/sta/RiseFallValues.hh
+ /pkg/git/OpenSTA/include/sta/RiseFallValues.hh \
+ /pkg/git/OpenSTA/include/sta/PortDirection.hh

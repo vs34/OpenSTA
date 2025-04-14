@@ -17,5 +17,5 @@ set_input_delay -clock CLK 1 [get_ports {D}]
 set_output_delay -clock CLK 1 [get_ports {Q}]
 
 # Perform timing analysis
-report_checks
+report_checks -digit 26
 
