@@ -3,25 +3,20 @@
 #include <iostream>
 #include <stdexcept>
 
-// Constructor: load configuration from external JSON file
 MlModel::MlModel() 
-    : lazyLoad_(true) // default lazy load true; may be overridden by config
-{
+    : lazyLoad_(true) {
     try {
-        // Change the file path as needed.
         loadConfigurations("/pkg/git/OpenSTA/modification/models_config.json");
     } catch (const std::exception &e) {
         std::cerr << "Error loading configurations: " << e.what() << std::endl;
     }
 }
 
-// Singleton instance
 MlModel& MlModel::getInstance() {
     static MlModel instance;
     return instance;
 }
 
-// Load configuration file using nlohmann/json and register each model.
 void MlModel::loadConfigurations(const std::string &configFile) {
     std::ifstream file(configFile);
     if (!file) {
@@ -30,12 +25,10 @@ void MlModel::loadConfigurations(const std::string &configFile) {
     json j;
     file >> j;
 
-    // Global lazy load setting
     if (j.contains("lazyLoad")) {
         lazyLoad_ = j["lazyLoad"].get<bool>();
     }
 
-    // Iterate over models array and register each configuration.
     if (j.contains("models") && j["models"].is_array()) {
         for (const auto &item : j["models"]) {
             ModelConfig config;
@@ -50,14 +43,11 @@ void MlModel::loadConfigurations(const std::string &configFile) {
     }
 }
 
-// Register a model by storing its configuration in the map.
 void MlModel::registerModel(const ModelConfig &config) {
-    // Insert the config and set the model pointer to nullptr initially.
     models_[config.name] = std::make_pair(config, nullptr);
     std::cout << "Registered model: " << config.name << " (path: " << config.modelPath << ")" << std::endl;
 }
 
-// Helper: load a model from disk given its configuration.
 std::shared_ptr<fdeep::model> MlModel::load_model(const ModelConfig &config) {
     try {
         auto mdl = std::make_shared<fdeep::model>(fdeep::load_model(config.modelPath));
@@ -69,32 +59,27 @@ std::shared_ptr<fdeep::model> MlModel::load_model(const ModelConfig &config) {
     }
 }
 
-// Get model pointer by name; if not loaded and lazyLoad_ is true, load it now.
 std::shared_ptr<fdeep::model> MlModel::getModel(const std::string &name) {
     auto it = models_.find(name);
     if (it == models_.end()) {
         throw std::runtime_error("Model not registered: " + name);
     }
-    // If model is already loaded, return it.
     if (it->second.second != nullptr) {
         return it->second.second;
     }
-    // If not loaded and lazyLoad_ is enabled, load the model.
     if (lazyLoad_) {
         it->second.second = load_model(it->second.first);
         return it->second.second;
     }
-    // Otherwise, throw an error or return nullptr.
     throw std::runtime_error("Model " + name + " is not loaded and lazy loading is disabled.");
 }
 
-// Predict using a specific model with given input data.
 float MlModel::predict(const std::string &modelName, const std::vector<float> &input_data) {
     auto mdl = getModel(modelName);
     const auto result = mdl->predict({ fdeep::tensor(fdeep::tensor_shape(input_data.size()), input_data) });
     std::vector<float> vec = result.data()->to_vector();
     if (!vec.empty()) {
-        return vec[0];  // Return the first output (adjust if needed)
+        return vec[0];
     } else {
         throw std::runtime_error("Model prediction returned an empty result.");
     }
@@ -128,44 +113,70 @@ std::pair<float,float> MlModel::calculateSkew(std::vector<float*> annotation) {
     return std::make_pair(minSkew, maxSkew);
 }
 
-// For demonstration: get annotations from the specified model.
-// This function returns a tuple with three booleans and three float pointers.
-// You can change the tuple contents and logic as needed.
-std::tuple<bool, bool, bool, float, float, float> 
+
+std::tuple<bool, bool, bool, float*, float*, float> 
 MlModel::getModelAnnotation(const std::string &modelToUse,
                             const std::vector<float*>& annotations,
                             const std::vector<float>& load_cap,
-                            const std::vector<float*>& slew)
-{
-    // If a model name is provided, load that model.
-    if (!modelToUse.empty()) {
-        getModel(modelToUse); // lazy-load happens here
+                            const std::vector<float*>& slew) {
+    try {
+        if (annotations.empty() || annotations[0] == nullptr) {
+            std::cerr << "[Warning] No annotations provided." << std::endl;
+            return std::make_tuple(false, false, false, nullptr, nullptr, -1.0f);
+        }
+
+        auto model_iter = models_.find(modelToUse);
+        if (model_iter == models_.end()) {
+            std::cerr << "[Warning] Model not registered: " << modelToUse << std::endl;
+            return std::make_tuple(false, false, false, nullptr, nullptr, -1.0f);
+        }
+
+        getModel(modelToUse); // Will try to load the model if lazyLoad is true
+
+        std::vector<float> input_data;
+        const auto& format = model_iter->second.first.inputFormat;
+
+        for (const auto& key : format) { // adding more input argument to the model should be added here
+            if (key == "load")
+                input_data.push_back(load_cap[0]); // if calculation nedded make funtion
+            else if (key == "slew_a")
+                input_data.push_back(slew[0][1]);
+            else if (key == "slew_b")
+                input_data.push_back(slew[1][1]);
+            else if (key == "skew_ab")
+                input_data.push_back(calculateSkew(annotations).second);
+            else {
+                std::cerr << "[Warning] Unknown input key: " << key << std::endl;
+                return std::make_tuple(false, false, false, nullptr, nullptr, -1.0f);
+            }
+        }
+
+        float pred_value = predict(modelToUse, input_data); // This will throw if fail
+
+        const auto& out_format = model_iter->second.first.outputFormat;
+        bool change_anno = false, change_cap = false, change_slew = false;
+
+        for (const auto& out : out_format) {
+            if (out == "rise_delay") change_anno = true;
+            if (out == "rise_slew") change_slew = true;
+        }
+
+        // -1 to all the index of the array no new value is calculated
+        float* new_anno = new float[4]{-1, -1, -1, -1};
+        float* new_slew = new float[2]{-1, -1};
+
+        if (change_anno) { // some array manupulation for more complex output
+            new_anno[0] = pred_value;
+        }
+
+        if (change_slew) {
+            new_slew[0] = pred_value;
+        }
+
+        return std::make_tuple(change_anno, change_slew, change_cap, new_anno, new_slew, -1.0f);
+    } catch (const std::exception &e) {
+        std::cerr << "[Warning] getModelAnnotation failed: " << e.what() << std::endl;
+        return std::make_tuple(false, false, false, nullptr, nullptr, -1.0f);
     }
-
-    // Check if there is at least one annotation.
-    if (annotations.empty() || annotations[0] == nullptr) {
-        std::cerr << "Error: No annotations provided." << std::endl;
-        return std::make_tuple(false, false, false, 0.0f, 0.0f, 0.0f);
-    }
-
-    // For demonstration, use the first annotation pointer to make a prediction.
-    // In a real-world scenario, you would format the annotations based on load_cap and slew.
-    float* pred1 = new float;
-    
-    // Prepare an input vector from the first annotation.
-    // Here we assume the annotation array has the required parameters.
-    // You may need to adjust the scaling based on your configuration.
-    // *pred1 = predict(modelToUse, { load_cap[0], slew[0][1], slew[1][0],calculateSkew(annotations)});
-std::vector<float> input_data;
-input_data.push_back(load_cap[0]);
-input_data.push_back(slew[0][1]); // make sure slew[0] is valid and has 2+ elements
-input_data.push_back(slew[1][0]); // same check for slew[1]
-input_data.push_back((calculateSkew(annotations)).second);
-
-*pred1 = predict(modelToUse, input_data);
-
-    // Create dummy adjustments for the other predictions.
-    
-    // Return tuple with status flags (for example, model loaded, prediction valid, extra flag)
-    return std::make_tuple(true, true, false, pred1[0], pred1[1], -1);
 }
+

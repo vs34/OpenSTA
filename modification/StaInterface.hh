@@ -18,7 +18,7 @@ private:
     float* getSlew(sta::Vertex *vertex);
     float getLoadCapacitance(sta::Pin *pin);
     void updateAnnotation(sta::Vertex *vertex);
-    void setSlew(sta::Vertex *vertex,float newslew);
+    void setSlew(sta::Vertex *vertex,float *newslew);
     void recursiveUpdate(sta::Vertex *vertex);
     void debugCout(sta::Vertex *vertex);
     void pinDirectionCout(sta::Pin *pin);

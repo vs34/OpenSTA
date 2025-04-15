@@ -19,8 +19,12 @@ float* StaInterface::getSlew(sta::Vertex *vertex) {
     return vertex->slews();
 }
 
-void StaInterface::setSlew(sta::Vertex *vertex, float newslew) {
-    vertex->slews()[0] = newslew;
+void StaInterface::setSlew(sta::Vertex *vertex, float *newslew) {
+    if (newslew[0] != -1)
+        vertex->slews()[0] = newslew[0];
+
+    if (newslew[1] != -1)
+        vertex->slews()[1] = newslew[1];
 }
 
 // Get the load capacitance for a pin by querying the LibertyPort.
@@ -47,7 +51,7 @@ void StaInterface::pinDirectionCout(sta::Pin *pin) {
     }
 }
 
-// Debug function: prints details about the vertex, its pin, and associated gate.
+// //Debug function: prints details about the vertex, its pin, and associated gate.
 void StaInterface::debugCout(sta::Vertex *vertex) {
     std::cout << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
     std::cout << "vertex - " << vertex << " pin - " << vertex->pin() << std::endl;
@@ -105,11 +109,11 @@ void StaInterface::updateAnnotation(sta::Vertex *vertex) {
             cap.push_back(getLoadCapacitance(prev_vertex->pin()));
         }
         // Call the ML model to get updated annotation.
-        auto [ch_anno, ch_slew, ch_cap, up_anno, up_cap, up_slew] = 
+        auto [ch_anno, ch_slew, ch_cap, up_anno, up_slew, up_cap] = 
             ml_model_.getModelAnnotation(model_to_use, annotation, cap, slew);
     
-        // if (ch_anno)
-        //     setAnnotationArray(vertex, up_anno);
+        if (ch_anno)
+             setAnnotationArray(vertex, up_anno);
         // If needed, update load capacitance and slew (assuming functions exist).
         // if (ch_cap)
         //    setLoadCapacitance(vertex->pin(), up_cap);
@@ -146,7 +150,7 @@ void StaInterface::recursiveUpdate(sta::Vertex *vertex) {
     while (edge_iter.hasNext()) {
         sta::Edge *next_edge = edge_iter.next();
         sta::Vertex *prev_vertex = next_edge->from(sta_graph_);
-        debugCout(prev_vertex);
+        //debugCout(prev_vertex);
         recursiveUpdate(prev_vertex);
     }
     updateAnnotation(vertex);
@@ -173,8 +177,8 @@ void StaInterface::updateGraph() {
             continue;
         }
         */
-        std::cout << "=========================================================" << std::endl;
-        std::cout << "recursiveUpdate for " << net_netlist_->pathName(vertex->pin()) << std::endl;
+        //std::cout << "=========================================================" << std::endl;
+        // std::cout << "recursiveUpdate for " << net_netlist_->pathName(vertex->pin()) << std::endl;
         recursiveUpdate(vertex);
 
         /*

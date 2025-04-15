@@ -55,7 +55,7 @@ public:
 
     // Returns a tuple with some status flags and predictions.
     // For demonstration, we return a tuple of three booleans and three float pointers.
-    std::tuple<bool, bool, bool, float, float, float> 
+    std::tuple<bool, bool, bool, float*, float*, float> 
     getModelAnnotation(const std::string &modelToUse,
                        const std::vector<float*>& annotations,
                        const std::vector<float>& load_cap,
