@@ -88,11 +88,11 @@ float MlModel::predict(const std::string &modelName, const std::vector<float> &i
 
 std::pair<float,float> MlModel::calculateSkew(std::vector<float*> annotation) {
     float minSkew, maxSkew;
-    float minA = std::min(annotation[0][2] , annotation[0][3]);
-    float maxA = std::max(annotation[0][0] , annotation[0][1]);
+    float minA = annotation[0][2]; // fall min for
+    float maxA = annotation[0][0]; // fall max
 
-    float minB = std::min(annotation[1][2] , annotation[1][3]);
-    float maxB = std::max(annotation[1][0] , annotation[1][1]);
+    float minB = annotation[1][2];
+    float maxB = annotation[1][0];
     if(minA==minB){
         minSkew = 0;
         maxSkew = std::max(std::fabs(minA - maxB), std::fabs(minB - maxA));
@@ -117,7 +117,7 @@ std::pair<float,float> MlModel::calculateSkew(std::vector<float*> annotation) {
 std::tuple<bool, bool, bool, float*, float*, float> 
 MlModel::getModelAnnotation(const std::string &modelToUse,
                             const std::vector<float*>& annotations,
-                            const std::vector<float>& load_cap,
+                            const float load_cap,
                             const std::vector<float*>& slew) {
     try {
         if (annotations.empty() || annotations[0] == nullptr) {
@@ -138,13 +138,13 @@ MlModel::getModelAnnotation(const std::string &modelToUse,
 
         for (const auto& key : format) { // adding more input argument to the model should be added here
             if (key == "load")
-                input_data.push_back(load_cap[0]); // if calculation nedded make funtion
+                input_data.push_back(load_cap); // if calculation nedded make funtion
             else if (key == "slew_a")
                 input_data.push_back(slew[0][1]);
             else if (key == "slew_b")
                 input_data.push_back(slew[1][1]);
             else if (key == "skew_ab")
-                input_data.push_back(calculateSkew(annotations).second);
+                input_data.push_back(calculateSkew(annotations).first);
             else {
                 std::cerr << "[Warning] Unknown input key: " << key << std::endl;
                 return std::make_tuple(false, false, false, nullptr, nullptr, -1.0f);

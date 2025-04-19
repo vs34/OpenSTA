@@ -58,7 +58,7 @@ public:
     std::tuple<bool, bool, bool, float*, float*, float> 
     getModelAnnotation(const std::string &modelToUse,
                        const std::vector<float*>& annotations,
-                       const std::vector<float>& load_cap,
+                       const float load_cap,
                        const std::vector<float*>& slew);
 };
 

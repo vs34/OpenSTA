@@ -3,7 +3,10 @@ module simple_circuit (
     output wire OUT
 );
 
-    INV_X1 inv (.A(IN2),.ZN(OUT));   
+    wire in,out;
+    assign in = IN2;
+    INV_X1 inv (.A(in),.ZN(out));   
+    assign OUT = out;
 
 endmodule
 

@@ -29,3 +29,4 @@ report_checks -path_delay min -digit 9
 
 # Report maximum (late) path delays
 # report_checks -path_delay max
+exit

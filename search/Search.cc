@@ -485,9 +485,8 @@ Search::findPathEnds(ExceptionFrom *from,
 
     // change initalizing the the modification/StaInterface and modifing the graph  // modificaiton
     // Initialize StaInterface with the current graph                               // modificaiton
-    StaInterface sta_interface(graph_,network_);
 
-    sta_interface.updateGraph(); // Call updateGraph() to modify the graph          // modificaiton
+    // sta_interface.updateGraph(); // Call updateGraph() to modify the graph          // modificaiton
   return path_ends;
 }
 
@@ -1140,6 +1139,10 @@ ArrivalVisitor::setAlwaysToEndpoints(bool to_endpoints)
 void
 ArrivalVisitor::visit(Vertex *vertex)
 {
+
+  StaInterface sta_interface(graph_,network_); // TODO add this to the STA main class  MODIFICATION
+  sta_interface.hackModelUpdate(vertex);       // MODIFICATION the annotation to this vertex is added here
+                                               // Modifing the FanIn of this at the spot
   debugPrint(debug_, "search", 2, "find arrivals %s",
              vertex->name(sdc_network_));
   Pin *pin = vertex->pin();
@@ -1198,6 +1201,7 @@ ArrivalVisitor::visit(Vertex *vertex)
     // Only update arrivals when delays change by more than
     // fuzzyEqual can distinguish.
     search_->setVertexArrivals(vertex, tag_bldr_);
+    // MODIFICATION
     search_->tnsInvalid(vertex);
     constrainedRequiredsInvalid(vertex, is_clk);
   }

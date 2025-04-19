@@ -17,7 +17,8 @@ private:
     float* getAnnotationArray(sta::Vertex *vertex);
     float* getSlew(sta::Vertex *vertex);
     float getLoadCapacitance(sta::Pin *pin);
-    void updateAnnotation(sta::Vertex *vertex);
+    void updateAnnotation_fanout_from_fanin(sta::Vertex *vertex);
+    void updateAnnotation_fanin_from_fanin(sta::Vertex *fanout);
     void setSlew(sta::Vertex *vertex,float *newslew);
     void recursiveUpdate(sta::Vertex *vertex);
     void debugCout(sta::Vertex *vertex);
@@ -27,6 +28,7 @@ private:
 public:
     StaInterface(sta::Graph* graph, sta::Network* network);
     void updateGraph();
+    void hackModelUpdate(sta::Vertex *vertex);
     std::map<sta::Vertex*,bool> visitedDP;
     std::map<sta::Vertex*,bool> cycleDect;
 };
