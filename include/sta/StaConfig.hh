@@ -1,0 +1,9 @@
+#define STA_VERSION "2.6.0"
+
+#define STA_GIT_SHA1 "957441276d9177388918ee857b870de65397cd1e"
+
+#define ZLIB_FOUND
+
+#define SSTA 0
+
+#define TCL_READLINE 0

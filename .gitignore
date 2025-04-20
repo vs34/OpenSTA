@@ -15,8 +15,6 @@ cmake-build-debug
 build
 pvt
 
-include/sta/StaConfig.hh
-
 app/sta
 app/libOpenSTA.*
 app/sta.exe
@@ -38,3 +36,5 @@ doc/messages.txt
 *Parse.cc
 *Parse.hh
 *Location.hh
+# clangd turds
+.cache/
