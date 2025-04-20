@@ -39,6 +39,7 @@
 #include "SearchClass.hh"
 #include "SearchPred.hh"
 #include "VertexVisitor.hh"
+#include "modification/StaInterface.hh"    // Mod
 
 namespace sta {
 
@@ -767,6 +768,8 @@ protected:
   SearchPred *adj_pred_;
   bool crpr_active_;
   bool has_fanin_one_;
+  StaInterface sta_interface_; // MODIFICATION
+
 };
 
 class RequiredCmp

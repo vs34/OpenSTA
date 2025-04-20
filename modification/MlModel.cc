@@ -121,7 +121,12 @@ MlModel::getModelAnnotation(const std::string &modelToUse,
                             const std::vector<float*>& slew) {
     try {
         if (annotations.empty() || annotations[0] == nullptr) {
-            std::cerr << "[Warning] No annotations provided." << std::endl;
+            std::cerr << "[Warning] No annotations provided @ A pin." << std::endl;
+            return std::make_tuple(false, false, false, nullptr, nullptr, -1.0f);
+        }
+
+        if (annotations.empty() || annotations[1] == nullptr) {
+            std::cerr << "[Warning] No annotations provided @ B pin" << std::endl;
             return std::make_tuple(false, false, false, nullptr, nullptr, -1.0f);
         }
 

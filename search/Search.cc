@@ -1074,6 +1074,7 @@ Search::findArrivalsSeed()
 ////////////////////////////////////////////////////////////////
 
 ArrivalVisitor::ArrivalVisitor(const StaState *sta) :
+  sta_interface_(graph(), network_),  // MODIFICATION 
   PathVisitor(nullptr, sta),
   always_save_prev_paths_(true)
 {
@@ -1085,6 +1086,7 @@ ArrivalVisitor::ArrivalVisitor(const StaState *sta) :
 ArrivalVisitor::ArrivalVisitor(bool always_to_endpoints,
 			       SearchPred *pred,
 			       const StaState *sta) :
+  sta_interface_(graph(), network_),  // MODIFICATION
   PathVisitor(pred, sta)
 {
   init0();
@@ -1140,9 +1142,10 @@ void
 ArrivalVisitor::visit(Vertex *vertex)
 {
 
-  StaInterface sta_interface(graph_,network_); // TODO add this to the STA main class  MODIFICATION
-  sta_interface.hackModelUpdate(vertex);       // MODIFICATION the annotation to this vertex is added here
+  sta_interface_.setGraph(graph_);
+  sta_interface_.hackModelUpdate(vertex);       // MODIFICATION the annotation to this vertex is added here
                                                // Modifing the FanIn of this at the spot
+
   debugPrint(debug_, "search", 2, "find arrivals %s",
              vertex->name(sdc_network_));
   Pin *pin = vertex->pin();

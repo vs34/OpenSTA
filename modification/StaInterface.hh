@@ -29,6 +29,7 @@ public:
     StaInterface(sta::Graph* graph, sta::Network* network);
     void updateGraph();
     void hackModelUpdate(sta::Vertex *vertex);
+    void setGraph(sta::Graph* graph);
     std::map<sta::Vertex*,bool> visitedDP;
     std::map<sta::Vertex*,bool> cycleDect;
 };

@@ -9,6 +9,9 @@ StaInterface::StaInterface(sta::Graph* graph, sta::Network* network) :
     ml_model_(MlModel::getInstance())
 {}
 
+void StaInterface::setGraph(sta::Graph *newgraph){
+    this->sta_graph_ = newgraph;
+}
 // Return the arrivals array for a vertex.
 float* StaInterface::getAnnotationArray(sta::Vertex *vertex) {
     return sta_graph_->arrivals(vertex);
@@ -132,7 +135,15 @@ void StaInterface::updateAnnotation_fanout_from_fanin(sta::Vertex *vertex) {
 void StaInterface::setAnnotationArray(sta::Vertex *vertex, float *new_annotation) {
     float* arrivals = sta_graph_->arrivals(vertex);
     if (arrivals != nullptr) {
-        arrivals = new_annotation;  // Modify the first arrival
+        bool anotation_update = false;
+        for (int a = 0 ; a < 4 ; a++){
+            if (new_annotation[a] != -1){  // this is set my model class if -1 no change
+                arrivals[a] = new_annotation[a];
+                anotation_update = true;
+            }
+        if (anotation_update)
+            std::cout << "[UPDATE] annotaion updated" << std::endl;
+        }
     } else {
         std::cerr << "Error: arrivals() returned nullptr!" << std::endl;
     }
@@ -238,7 +249,7 @@ void StaInterface::updateAnnotation_fanin_from_fanin(sta::Vertex *fanout){
 }
 
 void StaInterface::hackModelUpdate(sta::Vertex *vertex){
-    // this->debugCout(vertex);
+    //this->debugCout(vertex);
 
     const sta::PortDirection *direction = net_netlist_->direction(vertex->pin());
 
