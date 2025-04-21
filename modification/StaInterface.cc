@@ -63,6 +63,8 @@ void StaInterface::debugCout(sta::Vertex *vertex) {
     sta::Instance *instance = net_netlist_->instance(vertex->pin());
     sta::Cell *cell = net_netlist_->cell(instance);
     std::cout << "gate name " << net_netlist_->name(cell) << std::endl;
+    std::cout << "gate name " << net_netlist_->name(net_netlist_->cell(net_netlist_->instance(vertex->pin()))) << std::endl;
+
     /*
     float* annotation = getAnnotationArray(vertex);
     std::cout << "Annotation: "
@@ -141,9 +143,10 @@ void StaInterface::setAnnotationArray(sta::Vertex *vertex, float *new_annotation
                 arrivals[a] = new_annotation[a];
                 anotation_update = true;
             }
-        if (anotation_update)
-            std::cout << "[UPDATE] annotaion updated" << std::endl;
         }
+    if (anotation_update)
+        std::cout << "[UPDATE] annotaion updated for "<< net_netlist_->pathName(vertex->pin()) <<  std::endl;
+        
     } else {
         std::cerr << "Error: arrivals() returned nullptr!" << std::endl;
     }
@@ -214,7 +217,7 @@ void StaInterface::updateAnnotation_fanin_from_fanin(sta::Vertex *fanout){
         slew.push_back(getSlew(prev_vertex)); // Assuming getSlew returns a pointer to float; dereference it.
     }
     // Apdating annotation for pin A
-
+    std::cout << "[fetching] model annotation for " << net_netlist_->pathName(fanout->pin()) << std::endl;
     // Call the ML model to get updated annotation.
     auto [ch_anno, ch_slew, ch_cap, up_anno, up_slew, up_cap] = 
          ml_model_.getModelAnnotation(model_to_use, annotation, cap, slew);
