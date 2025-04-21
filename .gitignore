@@ -22,6 +22,22 @@ app/libOpenSTA.*
 app/sta.exe
 app/sta.dSYM
 
+# CMake build system junk
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+CMakeTmp/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+
+# CMake-generated project files
+build/
+compile_commands.json
+
+# Temporary files & clutter
+*.cmake
+
 # iverilog turd
 examples/gcd_tb
 
