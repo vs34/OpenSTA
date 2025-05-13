@@ -433,7 +433,7 @@ GraphDelayCalc::seedNoDrvrSlew(Vertex *drvr_vertex,
                                    load_pin_index_map, dcalc_ap);
   annotateLoadDelays(drvr_vertex, rf, dcalc_result, load_pin_index_map, delay_zero,
                      false, dcalc_ap);
-  arc_delay_calc_->finishDrvrPin();
+  arc_delay_calc->finishDrvrPin();
 }
 
 void
@@ -715,7 +715,7 @@ GraphDelayCalc::findDriverDelays(Vertex *drvr_vertex,
     for (Vertex *drvr : multi_drvr->drvrs())
       findDriverDelays1(drvr, multi_drvr, arc_delay_calc, load_pin_index_map);
   }
-  arc_delay_calc_->finishDrvrPin();
+  arc_delay_calc->finishDrvrPin();
 }
 
 MultiDrvrNet *
