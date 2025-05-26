@@ -35,6 +35,9 @@ private:
     // Loads a model given its configuration and returns a shared pointer.
     std::shared_ptr<fdeep::model> load_model(const ModelConfig &config);
 
+    float inverseMinMaxScale(float scaled, float minVal, float maxVal);
+
+    float minMaxScale(float original, float minVal, float maxVal);
     // Loads the configuration file and registers the models.
     void loadConfigurations(const std::string &configFile);
     std::pair<float,float> calculateSkew(std::vector<float*> annotation);
@@ -51,7 +54,7 @@ public:
 
     // Predict using the specified model and input data.
     // 'input_data' is a vector of floats prepared for the model.
-    float predict(const std::string &modelName, const std::vector<float> &input_data);
+    std::vector<float> predict(const std::string &modelName, const std::vector<float> &input_data);
 
     // Returns a tuple with some status flags and predictions.
     // For demonstration, we return a tuple of three booleans and three float pointers.

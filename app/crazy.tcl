@@ -29,14 +29,5 @@ set_load 0.02 [get_ports OUT]
 puts "\n=== STANDARD vs ML-ENHANCED MIS HOLD ANALYSIS ===\n"
 
 # 7) Detailed min-delay (hold) path report in the Clk group
-puts "\n>> report_checks (min-delay) in Clk group (up to 5 paths)"
-report_checks \
-  -path_group    Clk \
-  -path_delay    min \
-  -through       [get_cells FF1] \
-  -to            [get_cells FF2] \
-  -group_count   5 \
-  -endpoint_count 5 \
-  -format full
-
-puts "\n=== End of MIS HOLD Analysis ===\n"
+puts "\n>> report_checks (min-delay) in Clk group (up to 5 paths)
+"

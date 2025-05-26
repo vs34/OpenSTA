@@ -74,12 +74,12 @@ std::shared_ptr<fdeep::model> MlModel::getModel(const std::string &name) {
     throw std::runtime_error("Model " + name + " is not loaded and lazy loading is disabled.");
 }
 
-float MlModel::predict(const std::string &modelName, const std::vector<float> &input_data) {
+std::vector<float> MlModel::predict(const std::string &modelName, const std::vector<float> &input_data) {
     auto mdl = getModel(modelName);
     const auto result = mdl->predict({ fdeep::tensor(fdeep::tensor_shape(input_data.size()), input_data) });
     std::vector<float> vec = result.data()->to_vector();
     if (!vec.empty()) {
-        return vec[0];
+        return vec;
     } else {
         throw std::runtime_error("Model prediction returned an empty result.");
     }
@@ -113,6 +113,23 @@ std::pair<float,float> MlModel::calculateSkew(std::vector<float*> annotation) {
     return std::make_pair(minSkew, maxSkew);
 }
 
+float MlModel::minMaxScale(float original, float minVal, float maxVal) {
+    if (maxVal == minVal) {
+        throw std::invalid_argument("maxVal and minVal cannot be equal (division by zero).");
+    }
+    float  scaled =  (original - minVal) / (maxVal - minVal);
+    std::cout << "[>>>>>>>>>DEBUG>>>>>>>>>] scaled - " << scaled << " original - " << original << std::endl;
+    return scaled;
+}
+
+float MlModel::inverseMinMaxScale(float scaled, float minVal, float maxVal) {
+    if (maxVal == minVal) {
+        throw std::invalid_argument("maxVal and minVal cannot be equal (division by zero).");
+    }
+    float output = scaled * (maxVal - minVal) + minVal;
+    std::cout << "[$$$$$$$$$DEBUG$$$$$$$$$] scaled - " << scaled << " original - " << output << std::endl;
+    return output;
+}
 
 std::tuple<bool, bool, bool, float*, float*, float> 
 MlModel::getModelAnnotation(const std::string &modelToUse,
@@ -143,21 +160,21 @@ MlModel::getModelAnnotation(const std::string &modelToUse,
 
         for (const auto& key : format) { // adding more input argument to the model should be added here
             if (key == "load")
-                input_data.push_back(load_cap); // if calculation nedded make funtion
+                input_data.push_back(minMaxScale(load_cap,7e-16,4.65e-14)); // if calculation nedded make funtion
             else if (key == "slew_a")
-                input_data.push_back(slew[0][1]);
+                input_data.push_back(minMaxScale(slew[0][1],5e-12,3.2e-10));
             else if (key == "slew_b")
-                input_data.push_back(slew[1][1]);
+                input_data.push_back(minMaxScale(slew[1][1],5e-12,3.2e-10));
             else if (key == "skew_ab")
-                input_data.push_back(calculateSkew(annotations).first);
+                input_data.push_back(minMaxScale(calculateSkew(annotations).first,-1e-09,1e-09));
             else {
                 std::cerr << "[Warning] Unknown input key: " << key << std::endl;
                 return std::make_tuple(false, false, false, nullptr, nullptr, -1.0f);
             }
         }
 
-        float pred_value = predict(modelToUse, input_data); // This will throw if fail
-
+        std::vector<float> pred_value = predict(modelToUse, input_data); // This will throw if fail
+        
         const auto& out_format = model_iter->second.first.outputFormat;
         bool change_anno = false, change_cap = false, change_slew = false;
 
@@ -171,11 +188,11 @@ MlModel::getModelAnnotation(const std::string &modelToUse,
         float* new_slew = new float[2]{-1, -1};
 
         if (change_anno) { // some array manupulation for more complex output
-            new_anno[0] = pred_value;
+            new_anno[0] = inverseMinMaxScale(pred_value[0],7.59e-13,2.96e-10);
         }
 
         if (change_slew) {
-            new_slew[0] = pred_value;
+            new_slew[0] = inverseMinMaxScale(pred_value[1],4.56e-12,5.34e-10);
         }
 
         return std::make_tuple(change_anno, change_slew, change_cap, new_anno, new_slew, -1.0f);

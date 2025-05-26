@@ -3,7 +3,7 @@
 #include <iostream>
 
 // Constructor: initialize the STA graph and network pointer, and get the singleton MlModel instance.
-StaInterface::StaInterface(sta::Graph* graph, sta::Network* network) :
+StaInterface::StaInterface(sta::Graph* graph, sta::Network* network ) :
     sta_graph_(graph),
     net_netlist_(network),
     ml_model_(MlModel::getInstance())
@@ -32,7 +32,16 @@ void StaInterface::setSlew(sta::Vertex *vertex, float *newslew) {
 
 // Get the load capacitance for a pin by querying the LibertyPort.
 float StaInterface::getLoadCapacitance(sta::Pin *pin) {
+    if (pin == nullptr) {
+        return -1;
+    }
+
     sta::LibertyPort *lib_port = net_netlist_->libertyPort(pin);
+    if (lib_port == nullptr) {
+        return -1;
+        throw std::runtime_error("Null LibertyPort returned in getLoadCapacitance");
+    }
+
     return lib_port->capacitance();
 }
 
@@ -136,14 +145,19 @@ void StaInterface::updateAnnotation_fanout_from_fanin(sta::Vertex *vertex) {
 // NOTE: This implementation simply reassigns the pointer, so ensure this matches your intended behavior.
 void StaInterface::setAnnotationArray(sta::Vertex *vertex, float *new_annotation) {
     float* arrivals = sta_graph_->arrivals(vertex);
+    float new_arrivals[4];
     if (arrivals != nullptr) {
         bool anotation_update = false;
         for (int a = 0 ; a < 4 ; a++){
             if (new_annotation[a] != -1){  // this is set my model class if -1 no change
-                arrivals[a] = new_annotation[a];
+                std::cout << "[[[[[[[[UPDATE]]]]]]]] annotation change "<<arrivals[a]<<" to "<<new_annotation[a]<<std::endl;
+                new_arrivals[a] = new_annotation[a];
                 anotation_update = true;
             }
+            else
+                new_arrivals[a] = arrivals[a];
         }
+//     vertex->setArrivals(new_arrivals);
     if (anotation_update)
         std::cout << "[UPDATE] annotaion updated for "<< net_netlist_->pathName(vertex->pin()) <<  std::endl;
         
@@ -204,14 +218,17 @@ void StaInterface::updateAnnotation_fanin_from_fanin(sta::Vertex *fanout){
     std::vector<float*> slew;
     std::vector<sta::Vertex*> fanin;
     // ASSUMPTION: the gate name is obtained from the instance associated with the pin
-    float cap;
-    cap = getLoadCapacitance(fanout->pin());
+    // float cap;
+    // cap = getLoadCapacitance(fanout->pin());
+    std::vector<float> cap;
     sta::Instance *instance = net_netlist_->instance(fanout->pin());
     sta::Cell *cell = net_netlist_->cell(instance);
     const char* model_to_use =  net_netlist_->name(cell);
     while (edge_iter.hasNext()) {
+        
         sta::Edge *next_edge = edge_iter.next();
         sta::Vertex *prev_vertex = next_edge->from(sta_graph_);
+        cap.push_back(getLoadCapacitance(prev_vertex->pin()));
         fanin.push_back(prev_vertex);
         annotation.push_back(getAnnotationArray(prev_vertex));
         slew.push_back(getSlew(prev_vertex)); // Assuming getSlew returns a pointer to float; dereference it.
@@ -220,7 +237,7 @@ void StaInterface::updateAnnotation_fanin_from_fanin(sta::Vertex *fanout){
     std::cout << "[fetching] model annotation for " << net_netlist_->pathName(fanout->pin()) << std::endl;
     // Call the ML model to get updated annotation.
     auto [ch_anno, ch_slew, ch_cap, up_anno, up_slew, up_cap] = 
-         ml_model_.getModelAnnotation(model_to_use, annotation, cap, slew);
+         ml_model_.getModelAnnotation(model_to_use, annotation, cap[0], slew);
     
     if (ch_anno)
         setAnnotationArray(fanin[0], up_anno);
@@ -237,7 +254,7 @@ void StaInterface::updateAnnotation_fanin_from_fanin(sta::Vertex *fanout){
     std::swap(slew[0],slew[1]);
     // Call the ML model to get updated annotation.
     std::tie(ch_anno, ch_slew, ch_cap, up_anno, up_slew, up_cap) =
-            ml_model_.getModelAnnotation(model_to_use, annotation, cap, slew);
+            ml_model_.getModelAnnotation(model_to_use, annotation, cap[1], slew);
 
     
     if (ch_anno)
@@ -252,8 +269,10 @@ void StaInterface::updateAnnotation_fanin_from_fanin(sta::Vertex *fanout){
 }
 
 void StaInterface::hackModelUpdate(sta::Vertex *vertex){
-    //this->debugCout(vertex);
+    // this->debugCout(vertex);
 
+
+    // std::cout << " [debug] loadcapasitance is " << getLoadCapacitance(vertex->pin()) << std::endl;
     const sta::PortDirection *direction = net_netlist_->direction(vertex->pin());
 
     if (direction->isOutput()){ 
