@@ -88,6 +88,11 @@ std::shared_ptr<fdeep::model> MlModel::getModel(const std::string& name) {
     return entry.second;
 }
 
+bool MlModel::modelAvailable(const std::string& modelName) const {
+    return models_.find(modelName) != models_.end();
+}
+
+
 float MlModel::minMaxScale(float x, float minVal, float maxVal) const {
     return (x - minVal) / (maxVal - minVal);
 }

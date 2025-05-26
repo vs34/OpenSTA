@@ -37,6 +37,8 @@ public:
     // Perform A/B-swap dual inference and update DataToModel
     void Modify(DataToModel* data);
 
+    bool modelAvailable(const std::string& modelName) const;
+
     // Scaling helpers
     float minMaxScale(float x, float minVal, float maxVal) const;
     float inverseMinMaxScale(float s, float minVal, float maxVal) const;

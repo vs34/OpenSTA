@@ -1,6 +1,6 @@
 #define STA_VERSION "2.6.2"
 
-#define STA_GIT_SHA1 "1ccee26c34bbff662b7e22a7ea66360a82fbe3d2"
+#define STA_GIT_SHA1 "057d904c740bfcc7344ef4083e771da439bd8d2f"
 
 #define ZLIB_FOUND
 

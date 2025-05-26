@@ -63,7 +63,6 @@ void StaInterface::setAnnotationArray(sta::Vertex *vertex, float *new_annotation
         std::cout << "[setAnnotaiton] the new_annotation is nullptr" << std::endl;
         return;
     }
-    std::cout << "[setAnnotaiton] the new_annotation is NOT nullptr" << std::endl;
 
     // Assume arrivals are obtained here
     sta::Path* path_array = sta_graph_->paths(vertex);
@@ -110,7 +109,9 @@ void StaInterface::updateAnnotation_fanin_from_fanin(DataToModel* data) {
         data->setSlewB(sl[0],sl[1]);
 
     ml_model_->Modify(data);
+    std::cout << "[setAnnotaiton] setting annotation for A"<< std::endl;
     setAnnotationArray(data->getA(), data->getModifiedArrivalA());
+    std::cout << "[setAnnotaiton] setting annotation for B"<< std::endl;
     setAnnotationArray(data->getB(), data->getModifiedArrivalB());
     setSlew(data->getA(), data->getModifiedSlewA());
     setSlew(data->getB(), data->getModifiedSlewB());
@@ -120,9 +121,11 @@ void StaInterface::hackModelUpdate(sta::Vertex *vertex) {
     const sta::PortDirection *direction = net_netlist_->direction(vertex->pin());
     if (direction->isOutput()) {
         if (vertex->hasFanout()) {
-            DataToModel* data = new DataToModel(vertex);
-            updateAnnotation_fanin_from_fanin(data);
-            delete data;
+            if (ml_model_->modelAvailable(getGateName(vertex))){
+                DataToModel* data = new DataToModel(vertex);
+                updateAnnotation_fanin_from_fanin(data);
+                delete data;
+            }
         }
     }
 }
