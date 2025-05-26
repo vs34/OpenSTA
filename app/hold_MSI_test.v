@@ -6,7 +6,7 @@ module logic_net (
 );
 
     // Intermediate wires, like verses linking stanzas
-    wire op_f1, op_f2, op_buf;
+    wire op_f1, op_nand, op_buf;
 
     // Flip-Flop 1 — echoing IN1 through the clocked breeze
     DFF_X1 FF1 (
@@ -18,21 +18,21 @@ module logic_net (
     // Flip-Flop 2 — dancing with IN2, edge-bound
     DFF_X1 FF2 (
         .CK(Clk),
-        .D(IN2),
-        .Q(op_f2)
+        .D(op_nand),
+        .Q(OUT)
     );
 
     // Buffer — calming the signal, flowing smooth
     BUF_X1 BUF1 (
-        .A(op_f1),
+        .A(IN2),
         .Z(op_buf)
     );
 
     // NAND Gate — where op_f1 meets op_buf in dark logic embrace
     NAND2_X1 NAND1 (
-        .A1(op_f2),
+        .A1(op_f1),
         .A2(op_buf),
-        .ZN(OUT)
+        .ZN(op_nand)
     );
 
 endmodule

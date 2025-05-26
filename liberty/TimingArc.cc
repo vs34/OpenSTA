@@ -188,7 +188,7 @@ TimingArcSet::TimingArcSet(LibertyCell *cell,
 			   LibertyPort *from,
 			   LibertyPort *to,
 			   LibertyPort *related_out,
-			   TimingRole *role,
+			   const TimingRole *role,
 			   TimingArcAttrsPtr attrs) :
   from_(from),
   to_(to),
@@ -204,7 +204,7 @@ TimingArcSet::TimingArcSet(LibertyCell *cell,
 {
 }
 
-TimingArcSet::TimingArcSet(TimingRole *role,
+TimingArcSet::TimingArcSet(const TimingRole *role,
                            TimingArcAttrsPtr attrs) :
   from_(nullptr),
   to_(nullptr),
@@ -292,7 +292,7 @@ TimingArcSet::findTimingArc(unsigned arc_index)
 }
 
 void
-TimingArcSet::setRole(TimingRole *role)
+TimingArcSet::setRole(const TimingRole *role)
 {
   role_ = role;
 }
@@ -309,9 +309,9 @@ TimingArcSet::arcsFrom(const RiseFall *from_rf,
 		       TimingArc *&arc1,
 		       TimingArc *&arc2) const
 {
-  int tr_index = from_rf->index();
-  arc1 = from_arc1_[tr_index];
-  arc2 = from_arc2_[tr_index];
+  int rf_index = from_rf->index();
+  arc1 = from_arc1_[rf_index];
+  arc2 = from_arc2_[rf_index];
 }
 
 TimingArc *
@@ -422,8 +422,8 @@ timingArcSetLess(const TimingArcSet *set1,
     LibertyPort *to1 = set1->to();
     LibertyPort *to2 = set2->to();
     if (LibertyPort::equiv(to1, to2)) {
-      TimingRole *role1 = set1->role();
-      TimingRole *role2 = set2->role();
+      const TimingRole *role1 = set1->role();
+      const TimingRole *role2 = set2->role();
       if (role1 == role2) {
 	const FuncExpr *cond1 = set1->cond();
 	const FuncExpr *cond2 = set2->cond();
@@ -536,8 +536,8 @@ TimingArcSet::destroy()
 ////////////////////////////////////////////////////////////////
 
 TimingArc::TimingArc(TimingArcSet *set,
-		     Transition *from_rf,
-		     Transition *to_rf,
+		     const Transition *from_rf,
+		     const Transition *to_rf,
 		     TimingModel *model) :
   set_(set),
   from_rf_(from_rf),
@@ -553,6 +553,19 @@ TimingArc::~TimingArc()
   // The models referenced by scaled_models_ are owned by the scaled
   // cells and are deleted by ~LibertyCell.
   delete scaled_models_;
+}
+
+string
+TimingArc::to_string() const
+{
+  string str = set_->from()->name();
+  str += " ";
+  str += from_rf_->to_string();
+  str += " -> ";
+  str += set_->to()->name();
+  str += " ";
+  str += to_rf_->to_string();
+  return str;
 }
 
 GateTimingModel *
@@ -664,7 +677,7 @@ static EnumNameMap<TimingSense> timing_sense_name_map =
   };
 
 const char *
-timingSenseString(TimingSense sense)
+to_string(TimingSense sense)
 {
   return timing_sense_name_map.find(sense);
 }
