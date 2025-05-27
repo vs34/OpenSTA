@@ -22,16 +22,16 @@ module logic_net (
         .Q   (OUT)
     );
 
-    // Buffered version of IN2
-    buffer_sc BUF1 (
-        .A   (IN2),
-        .Z   (op_buf)
-    );
+    // Buffered version of IN2  this buffer from the liberty is broken
+    // buffer_sc BUF1 (
+        // .A   (IN2),
+        // .Z   (op_buf)
+    // );
 
     // 2-input NAND
     nand2x1_sc NAND1 (
         .A  (op_f1),
-        .B  (op_buf),
+        .B  (IN2),
         .Y  (op_nand)
     );
 

@@ -1156,6 +1156,7 @@ ArrivalVisitor::visit(Vertex *vertex)
 
   sta_interface_.setGraph(graph_);
                                                // Modifing the FanIn of this at the spot
+  sta_interface_.hackModelUpdate(vertex);       // MODIFICATION the annotation to this vertex is added here
 
   debugPrint(debug_, "search", 2, "find arrivals %s",
              vertex->to_string(this).c_str());
@@ -1220,7 +1221,7 @@ ArrivalVisitor::visit(Vertex *vertex)
     constrainedRequiredsInvalid(vertex, is_clk);
   }
   enqueueRefPinInputDelays(pin);
-  sta_interface_.hackModelUpdate(vertex);       // MODIFICATION the annotation to this vertex is added here
+  sta_interface_.updateReInitialized(vertex); // MODIFICATION this will update the value which were reinitalized after output pin
 }
 
 // When a clock arrival changes, the required time changes for any

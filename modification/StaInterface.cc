@@ -33,6 +33,25 @@ float* StaInterface::getAnnotationArray(sta::Vertex *vertex) {
     return arrivals;
 }
 
+
+void StaInterface::checkArrivalArray(sta::Vertex *vertex) {
+    if (vertex == nullptr)
+        return;
+    float* arrivals = new float[4] ; // min/max rise/fall
+    sta::Path* path_array = sta_graph_->paths(vertex);
+
+    if (!path_array) return;
+
+    // The number of paths is architecture-specific.
+    // Commonly it's 4 (rise/fall × min/max).
+    for (int i = 0; i < 4; ++i) {
+        arrivals[i] = path_array[i].arrival();
+    }
+    std::cout << "[annotations currently] arrivals = "<< arrivals[0] << " " << arrivals[1] << " " << arrivals[2] << " " << arrivals[3] << std::endl;
+
+    return;
+}
+
 // Return the slew pointer for a vertex.
 float* StaInterface::getSlew(sta::Vertex *vertex) {
     if (vertex == nullptr)
@@ -58,7 +77,7 @@ float StaInterface::getLoadCapacitance(sta::Vertex *vertex) {
 }
 
 // Sets the annotation array for a vertex.
-void StaInterface::setAnnotationArray(sta::Vertex *vertex, float *new_annotation) {
+void StaInterface::setAnnotationArray(sta::Vertex *vertex, float *new_annotation, float *old_annotation) {
     if (new_annotation == nullptr){
         std::cout << "[setAnnotaiton] the new_annotation is nullptr" << std::endl;
         return;
@@ -67,14 +86,20 @@ void StaInterface::setAnnotationArray(sta::Vertex *vertex, float *new_annotation
     // Assume arrivals are obtained here
     sta::Path* path_array = sta_graph_->paths(vertex);
 
+    for (int i = 0; i < 4; ++i){
+        if (new_annotation[i] == -1.0f)
+            new_annotation[i] = old_annotation[i];
+    }
 
     // The number of paths is architecture-specific.
     // Commonly it's 4 (rise/fall × min/max).
     for (int i = 0; i < 4; ++i) {
-        if (new_annotation[i] != -1)
+        if (new_annotation[i] != -1.0f) {
             std::cout << "[setAnnotaiton] annotations changes from " << path_array[i].arrival() << " to " << new_annotation[i] << std::endl;
             path_array[i].setArrival(new_annotation[i]);
+        }
     }
+    return;
 }
 
 const char* StaInterface::getGateName(sta::Vertex *vertex){
@@ -85,7 +110,7 @@ const char* StaInterface::getGateName(sta::Vertex *vertex){
     return net_netlist_->name(cell);
 }
 
-void StaInterface::updateAnnotation_fanin_from_fanin(DataToModel* data) {
+bool StaInterface::updateAnnotation_fanin_from_fanin(DataToModel* data) {
     data->setLoadCap(getLoadCapacitance(data->getZn()));
     data->setGateName(getGateName(data->getZn()));
 
@@ -98,6 +123,9 @@ void StaInterface::updateAnnotation_fanin_from_fanin(DataToModel* data) {
         else
             data->setB(prev_vertex);
     }
+    auto it = visited_vertex_.find(data->getA());
+    if (it != visited_vertex_.end())
+        return false;
 
     data->setOriginalArrivalA(getAnnotationArray(data->getA()));
     data->setOriginalArrivalB(getAnnotationArray(data->getB()));
@@ -109,12 +137,17 @@ void StaInterface::updateAnnotation_fanin_from_fanin(DataToModel* data) {
         data->setSlewB(sl[0],sl[1]);
 
     ml_model_->Modify(data);
+    checkArrivalArray(data->getA());
     std::cout << "[setAnnotaiton] setting annotation for A"<< std::endl;
-    setAnnotationArray(data->getA(), data->getModifiedArrivalA());
+    setAnnotationArray(data->getA(), data->getModifiedArrivalA(),data->getOriginalArrivalA());
+    checkArrivalArray(data->getA());
+    checkArrivalArray(data->getB());
     std::cout << "[setAnnotaiton] setting annotation for B"<< std::endl;
-    setAnnotationArray(data->getB(), data->getModifiedArrivalB());
+    setAnnotationArray(data->getB(), data->getModifiedArrivalB(), data->getOriginalArrivalB());
+    checkArrivalArray(data->getB());
     setSlew(data->getA(), data->getModifiedSlewA());
     setSlew(data->getB(), data->getModifiedSlewB());
+    return true;
 }
 
 void StaInterface::hackModelUpdate(sta::Vertex *vertex) {
@@ -123,10 +156,33 @@ void StaInterface::hackModelUpdate(sta::Vertex *vertex) {
         if (vertex->hasFanout()) {
             if (ml_model_->modelAvailable(getGateName(vertex))){
                 DataToModel* data = new DataToModel(vertex);
-                updateAnnotation_fanin_from_fanin(data);
-                delete data;
+                bool updated = updateAnnotation_fanin_from_fanin(data);
+                // delete data;
+                if (updated){
+                    visited_vertex_[data->getA()] = data;
+                    visited_vertex_[data->getB()] = data;
+                }
             }
         }
     }
 }
 
+
+void StaInterface::updateReInitialized(sta::Vertex *vertex) {
+    // Look up whether this fan-in was part of an output we ML-touched
+    auto it = visited_vertex_.find(vertex);
+    if (it == visited_vertex_.end())
+        return;
+    DataToModel* data = it->second;
+
+    // If this is pin A, apply A’s modified vs. original; else B’s
+    if (vertex == data->getA()) {
+        setAnnotationArray(data->getA(),
+                           data->getModifiedArrivalA(),
+                           data->getOriginalArrivalA());
+    } else if (vertex == data->getB()) {
+        setAnnotationArray(data->getB(),
+                           data->getModifiedArrivalB(),
+                           data->getOriginalArrivalB());
+    }
+}

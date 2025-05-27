@@ -26,6 +26,7 @@ set_input_transition 0.005 [get_ports IN2]
 set_load 0.02 [get_ports OUT]
 
 report_checks -rise_through  NAND1/A -digits 5 -format full -fields net -path_delay max
+
 report_checks -rise_through  NAND1/B -digits 5 -format full -fields net -path_delay max
 
 report_checks -rise_through  NAND1/A -digits 5 -format full -fields net -path_delay max
