@@ -6,6 +6,9 @@ This project extends [OpenSTA](https://github.com/The-OpenROAD-Project/OpenSTA) 
 
 By default, OpenSTA only supports **Single Input Switching (SIS)**. This modification enables dynamic delay annotation for MIS conditions by hooking a trained ML model into the STA flow — *no core rebuilding needed for adding or updating models.*
 
+
+sta -version = 2.6.0
+
 ---
 
 ## 🛠️ Build Instructions
