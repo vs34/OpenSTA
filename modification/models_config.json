@@ -1,5 +1,5 @@
 {
-  "lazyLoad": false,
+  "lazyLoad": true,
   "models": [
     {
       "name": "NAND2_X1",
