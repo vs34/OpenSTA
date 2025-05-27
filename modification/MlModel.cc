@@ -1,204 +1,206 @@
 #include "MlModel.hh"
+#include "DataToModel.hh"
 #include <fstream>
 #include <iostream>
-#include <stdexcept>
 
-MlModel::MlModel() 
-    : lazyLoad_(true) {
+using json = nlohmann::json;
+
+// Static singleton pointer
+MlModel* MlModel::instance_ = nullptr;
+
+// Private constructor
+MlModel::MlModel() {
     try {
-        loadConfigurations("/pkg/git/OpenSTA/modification/models_config.json");
-    } catch (const std::exception &e) {
-        std::cerr << "Error loading configurations: " << e.what() << std::endl;
+        loadConfigurations("models_config.json");
+    } catch (const std::exception& e) {
+        std::cerr << "[Error] MlModel init failed: " << e.what() << std::endl;
     }
 }
 
-MlModel& MlModel::getInstance() {
-    static MlModel instance;
-    return instance;
+// Singleton accessor
+MlModel* MlModel::getInstance() {
+    if (!instance_) {
+        instance_ = new MlModel();
+    }
+    return instance_;
 }
 
 void MlModel::loadConfigurations(const std::string &configFile) {
     std::ifstream file(configFile);
-    if (!file) {
-        throw std::runtime_error("Could not open configuration file: " + configFile);
-    }
-    json j;
-    file >> j;
+    if (!file) throw std::runtime_error("Cannot open config: " + configFile);
+    json j; file >> j;
 
-    if (j.contains("lazyLoad")) {
+    if (j.contains("lazyLoad"))
         lazyLoad_ = j["lazyLoad"].get<bool>();
-    }
 
     if (j.contains("models") && j["models"].is_array()) {
-        for (const auto &item : j["models"]) {
-            ModelConfig config;
-            config.name = item["name"].get<std::string>();
-            config.modelPath = item["path"].get<std::string>();
-            if (item.contains("inputFormat"))
-                config.inputFormat = item["inputFormat"].get<std::vector<std::string>>();
-            if (item.contains("outputFormat"))
-                config.outputFormat = item["outputFormat"].get<std::vector<std::string>>();
-            registerModel(config);
-        }
-    }
-}
+        for (auto &item : j["models"]) {
+            ModelConfig cfg;
+            cfg.name             = item.at("name").get<std::string>();
+            std::cout << "{MODLE}}}} " << cfg.name << std::endl;
+            cfg.modelPath        = item.at("path").get<std::string>();
+            cfg.modifyAnnotation = item.value("modify_annotation", true);
+            cfg.inputFormat      = item.at("inputFormat").get<std::vector<std::string>>();
+            cfg.outputFormat     = item.at("outputFormat").get<std::vector<std::string>>();
 
-void MlModel::registerModel(const ModelConfig &config) {
-    models_[config.name] = std::make_pair(config, nullptr);
-    std::cout << "Registered model: " << config.name << " (path: " << config.modelPath << ")" << std::endl;
-}
-
-std::shared_ptr<fdeep::model> MlModel::load_model(const ModelConfig &config) {
-    try {
-        auto mdl = std::make_shared<fdeep::model>(fdeep::load_model(config.modelPath));
-        std::cout << "Loaded model " << config.name << " from " << config.modelPath << std::endl;
-        return mdl;
-    } catch (const std::exception &e) {
-        std::cerr << "Error loading model " << config.name << ": " << e.what() << std::endl;
-        throw;
-    }
-}
-
-std::shared_ptr<fdeep::model> MlModel::getModel(const std::string &name) {
-    auto it = models_.find(name);
-    if (it == models_.end()) {
-        throw std::runtime_error("Model not registered: " + name);
-    }
-    if (it->second.second != nullptr) {
-        return it->second.second;
-    }
-    if (lazyLoad_) {
-        it->second.second = load_model(it->second.first);
-        return it->second.second;
-    }
-    throw std::runtime_error("Model " + name + " is not loaded and lazy loading is disabled.");
-}
-
-std::vector<float> MlModel::predict(const std::string &modelName, const std::vector<float> &input_data) {
-    auto mdl = getModel(modelName);
-    const auto result = mdl->predict({ fdeep::tensor(fdeep::tensor_shape(input_data.size()), input_data) });
-    std::vector<float> vec = result.data()->to_vector();
-    if (!vec.empty()) {
-        return vec;
-    } else {
-        throw std::runtime_error("Model prediction returned an empty result.");
-    }
-}
-
-
-std::pair<float,float> MlModel::calculateSkew(std::vector<float*> annotation) {
-    float minSkew, maxSkew;
-    float minA = annotation[0][2]; // fall min for
-    float maxA = annotation[0][0]; // fall max
-
-    float minB = annotation[1][2];
-    float maxB = annotation[1][0];
-    if(minA==minB){
-        minSkew = 0;
-        maxSkew = std::max(std::fabs(minA - maxB), std::fabs(minB - maxA));
-    }
-    else if(maxA<minB){
-        minSkew = std::fabs(maxA - minB);
-        maxSkew = std::max(std::fabs(minA - maxB), std::fabs(minB - maxA));
-    }
-    else if(maxB<minA){
-        minSkew = std::fabs(maxB - minA);
-        maxSkew = std::max(std::fabs(minA - maxB), std::fabs(minB - maxA));
-    }
-    else {
-        minSkew = 0;
-        maxSkew = std::max(std::fabs(minA - maxB), std::fabs(minB - maxA));
-    }
-    
-    return std::make_pair(minSkew, maxSkew);
-}
-
-float MlModel::minMaxScale(float original, float minVal, float maxVal) {
-    if (maxVal == minVal) {
-        throw std::invalid_argument("maxVal and minVal cannot be equal (division by zero).");
-    }
-    float  scaled =  (original - minVal) / (maxVal - minVal);
-    std::cout << "[>>>>>>>>>DEBUG>>>>>>>>>] scaled - " << scaled << " original - " << original << std::endl;
-    return scaled;
-}
-
-float MlModel::inverseMinMaxScale(float scaled, float minVal, float maxVal) {
-    if (maxVal == minVal) {
-        throw std::invalid_argument("maxVal and minVal cannot be equal (division by zero).");
-    }
-    float output = scaled * (maxVal - minVal) + minVal;
-    std::cout << "[$$$$$$$$$DEBUG$$$$$$$$$] scaled - " << scaled << " original - " << output << std::endl;
-    return output;
-}
-
-std::tuple<bool, bool, bool, float*, float*, float> 
-MlModel::getModelAnnotation(const std::string &modelToUse,
-                            const std::vector<float*>& annotations,
-                            const float load_cap,
-                            const std::vector<float*>& slew) {
-    try {
-        if (annotations.empty() || annotations[0] == nullptr) {
-            std::cerr << "[Warning] No annotations provided @ A pin." << std::endl;
-            return std::make_tuple(false, false, false, nullptr, nullptr, -1.0f);
-        }
-
-        if (annotations.empty() || annotations[1] == nullptr) {
-            std::cerr << "[Warning] No annotations provided @ B pin" << std::endl;
-            return std::make_tuple(false, false, false, nullptr, nullptr, -1.0f);
-        }
-
-        auto model_iter = models_.find(modelToUse);
-        if (model_iter == models_.end()) {
-            std::cerr << "[Warning] Model not registered: " << modelToUse << std::endl;
-            return std::make_tuple(false, false, false, nullptr, nullptr, -1.0f);
-        }
-
-        getModel(modelToUse); // Will try to load the model if lazyLoad is true
-
-        std::vector<float> input_data;
-        const auto& format = model_iter->second.first.inputFormat;
-
-        for (const auto& key : format) { // adding more input argument to the model should be added here
-            if (key == "load")
-                input_data.push_back(minMaxScale(load_cap,7e-16,4.65e-14)); // if calculation nedded make funtion
-            else if (key == "slew_a")
-                input_data.push_back(minMaxScale(slew[0][1],5e-12,3.2e-10));
-            else if (key == "slew_b")
-                input_data.push_back(minMaxScale(slew[1][1],5e-12,3.2e-10));
-            else if (key == "skew_ab")
-                input_data.push_back(minMaxScale(calculateSkew(annotations).first,-1e-09,1e-09));
-            else {
-                std::cerr << "[Warning] Unknown input key: " << key << std::endl;
-                return std::make_tuple(false, false, false, nullptr, nullptr, -1.0f);
+            // scaleInput: flatten [min1,max1,min2,max2,...]
+            for (size_t i = 0; i + 1 < item.at("scaleInput").size(); i += 2) {
+                cfg.scaleInput.emplace_back(
+                    item["scaleInput"][i].get<float>(),
+                    item["scaleInput"][i+1].get<float>()
+                );
             }
+            // scaleOutput
+            for (size_t i = 0; i + 1 < item.at("scaleOutput").size(); i += 2) {
+                cfg.scaleOutput.emplace_back(
+                    item["scaleOutput"][i].get<float>(),
+                    item["scaleOutput"][i+1].get<float>()
+                );
+            }
+            if (cfg.modifyAnnotation)
+                registerModel(cfg);
         }
-
-        std::vector<float> pred_value = predict(modelToUse, input_data); // This will throw if fail
-        
-        const auto& out_format = model_iter->second.first.outputFormat;
-        bool change_anno = false, change_cap = false, change_slew = false;
-
-        for (const auto& out : out_format) {
-            if (out == "rise_delay") change_anno = true;
-            if (out == "rise_slew") change_slew = true;
-        }
-
-        // -1 to all the index of the array no new value is calculated
-        float* new_anno = new float[4]{-1, -1, -1, -1};
-        float* new_slew = new float[2]{-1, -1};
-
-        if (change_anno) { // some array manupulation for more complex output
-            new_anno[0] = inverseMinMaxScale(pred_value[0],7.59e-13,2.96e-10);
-        }
-
-        if (change_slew) {
-            new_slew[0] = inverseMinMaxScale(pred_value[1],4.56e-12,5.34e-10);
-        }
-
-        return std::make_tuple(change_anno, change_slew, change_cap, new_anno, new_slew, -1.0f);
-    } catch (const std::exception &e) {
-        std::cerr << "[Warning] getModelAnnotation failed: " << e.what() << std::endl;
-        return std::make_tuple(false, false, false, nullptr, nullptr, -1.0f);
     }
+}
+
+void MlModel::registerModel(const ModelConfig& cfg) {
+    models_[cfg.name] = {cfg, nullptr};
+    if (!lazyLoad_) {
+        // immediate load
+        std::cout << "loading model for " << cfg.name << std::endl;
+        models_[cfg.name].second = std::make_shared<fdeep::model>(
+            fdeep::load_model(cfg.modelPath)
+        );
+    }
+}
+
+std::shared_ptr<fdeep::model> MlModel::getModel(const std::string& name) {
+    auto it = models_.find(name);
+    if (it == models_.end())
+        throw std::runtime_error("Model not registered: " + name);
+    auto &entry = it->second;
+    if (!entry.second) {
+        // lazy load on first use
+        entry.second = std::make_shared<fdeep::model>(
+            fdeep::load_model(entry.first.modelPath)
+        );
+    }
+    return entry.second;
+}
+
+bool MlModel::modelAvailable(const std::string& modelName) const {
+    return models_.find(modelName) != models_.end();
+}
+
+
+float MlModel::minMaxScale(float x, float minVal, float maxVal) const {
+    return (x - minVal) / (maxVal - minVal)*1000000000000;
+}
+
+float MlModel::inverseMinMaxScale(float s, float minVal, float maxVal) const {
+    return s * (maxVal - minVal) + minVal*100000000000000;
+}
+
+std::pair<float, float> MlModel::calculateSkew(const std::vector<float*>& annos) const {
+    if (!annos[0] || !annos[1]) return {0.0f, 0.0f};
+    return { annos[0][0] - annos[1][0], annos[0][1] - annos[1][1] };
+}
+
+std::vector<float> MlModel::predict(const std::string &modelName,
+                                    const std::vector<float> &input_data) {
+    auto mdl = getModel(modelName);
+    // wrap in a single tensor of shape [input_data.size()]
+    fdeep::tensor t(fdeep::tensor_shape(input_data.size()), input_data);
+    const auto res = mdl->predict({ t });
+    // res is a vector<fdeep::tensor>, but frugally-deep packs single-output
+    std::vector<float> out;
+    for (auto &ot : res) {
+        auto v = ot.to_vector();
+        out.insert(out.end(), v.begin(), v.end());
+    }
+    if (out.empty())
+        throw std::runtime_error("Empty prediction from model " + modelName);
+    return out;
+}
+
+std::vector<float> MlModel::constructInput(const ModelConfig& cfg,
+                                           float load,
+                                           const std::vector<float*>& annos,
+                                           const std::vector<float*>& slews) {
+    std::vector<float> in;
+    for (size_t i = 0; i < cfg.inputFormat.size(); ++i) {
+        auto key = cfg.inputFormat[i];
+        auto [mn, mx] = cfg.scaleInput[i];
+        if (key == "load")
+            in.push_back(minMaxScale(load, mn, mx));
+        else if (key == "slew_a")
+            in.push_back(minMaxScale(slews[0][1], mn, mx));
+        else if (key == "slew_b")
+            in.push_back(minMaxScale(slews[1][1], mn, mx));
+        else if (key == "skew_ab")
+            in.push_back(minMaxScale(calculateSkew(annos).first, mn, mx));
+        else
+            std::cerr << "[Warn] Unknown key " << key << std::endl;
+    }
+    return in;
+}
+
+void MlModel::decodeOutput(const ModelConfig& cfg,
+                           const std::vector<float>& pred,
+                           float* anno, float* slew) {
+    for (size_t i = 0; i < cfg.outputFormat.size(); ++i) {
+        auto key = cfg.outputFormat[i];
+        auto [mn, mx] = cfg.scaleOutput[i];
+        float v = inverseMinMaxScale(pred[i], mn, mx);
+        if (key == "rise_delay") anno[0] = v;
+        else if (key == "rise_slew") slew[0] = v;
+    }
+}
+
+void MlModel::Modify(DataToModel* data) {
+    auto it = models_.find(data->gate_name);
+    if (it == models_.end()) {
+        std::cerr << "[Error] no model for " << data->gate_name << std::endl;
+        return;
+    }
+    auto const& cfg = it->second.first;
+    if (!cfg.modifyAnnotation) {
+        // JSON said no modify
+        return;
+    }
+
+    // Gather A/B data
+    std::vector<float*> Aann = { data->getOriginalArrivalA(), data->getOriginalArrivalB() };
+    std::vector<float*> Bann = { data->getOriginalArrivalB(), data->getOriginalArrivalA() };
+    std::vector<float*> Aslew = {
+        new float[2]{ data->getSlewA().first, data->getSlewA().second },
+        new float[2]{ data->getSlewB().first, data->getSlewB().second }
+    };
+    std::vector<float*> Bslew = {
+        new float[2]{ data->getSlewB().first, data->getSlewB().second },
+        new float[2]{ data->getSlewA().first, data->getSlewA().second }
+    };
+
+    // Predict for A
+    auto pA = predict(cfg.name, constructInput(cfg, data->getLoadCap(), Aann, Aslew));
+    // And for B
+    auto pB = predict(cfg.name, constructInput(cfg, data->getLoadCap(), Bann, Bslew));
+
+    // Allocate output arrays
+    float* outA = new float[4]{-1,-1,-1,-1};
+    float* outB = new float[4]{-1,-1,-1,-1};
+    float* sA   = new float[2]{-1,-1};
+    float* sB   = new float[2]{-1,-1};
+
+    decodeOutput(cfg, pA, outA, sA);
+    decodeOutput(cfg, pB, outB, sB);
+
+    data->setModifiedArrivalA(outA);
+    data->setModifiedSlewA(sA[0], sA[1]);
+    data->setModifiedArrivalB(outB);
+    data->setModifiedSlewB(sB[0], sB[1]);
+
+    delete[] Aslew[0]; delete[] Aslew[1];
+    delete[] Bslew[0]; delete[] Bslew[1];
 }
 

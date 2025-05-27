@@ -1,9 +1,10 @@
 #include "StaInterface.hh"
 #include "MlModel.hh"
 #include <iostream>
+#include <stdio.h>
 
 // Constructor: initialize the STA graph and network pointer, and get the singleton MlModel instance.
-StaInterface::StaInterface(sta::Graph* graph, sta::Network* network ) :
+StaInterface::StaInterface(sta::Graph* graph, sta::Network* network) :
     sta_graph_(graph),
     net_netlist_(network),
     ml_model_(MlModel::getInstance())
@@ -12,138 +13,47 @@ StaInterface::StaInterface(sta::Graph* graph, sta::Network* network ) :
 void StaInterface::setGraph(sta::Graph *newgraph){
     this->sta_graph_ = newgraph;
 }
+
 // Return the arrivals array for a vertex.
 float* StaInterface::getAnnotationArray(sta::Vertex *vertex) {
-    return sta_graph_->arrivals(vertex);
+        return sta_graph_->arrivals(vertex);
+}
+
+
+void StaInterface::checkArrivalArray(sta::Vertex *vertex) {
+
+    float* arrivals = sta_graph_->arrivals(vertex);
+    std::cout << "[annotations currently] arrivals = "<< arrivals[0] << " " << arrivals[1] << " " << arrivals[2] << " " << arrivals[3] << std::endl;
+
+    return;
 }
 
 // Return the slew pointer for a vertex.
 float* StaInterface::getSlew(sta::Vertex *vertex) {
+    if (vertex == nullptr)
+        return nullptr;
     return vertex->slews();
 }
 
-void StaInterface::setSlew(sta::Vertex *vertex, float *newslew) {
-    if (newslew[0] != -1)
-        vertex->slews()[0] = newslew[0];
+void StaInterface::setSlew(sta::Vertex *vertex, std::pair<float, float> newslew) {
+    if (newslew.first != -1)
+        vertex->slews()[0] = newslew.first;
 
-    if (newslew[1] != -1)
-        vertex->slews()[1] = newslew[1];
+    if (newslew.second != -1)
+        vertex->slews()[1] = newslew.second;
 }
 
 // Get the load capacitance for a pin by querying the LibertyPort.
-float StaInterface::getLoadCapacitance(sta::Pin *pin) {
-    if (pin == nullptr) {
-        return -1;
-    }
-
+float StaInterface::getLoadCapacitance(sta::Vertex *vertex) {
+    if (vertex == nullptr)
+        return -1.0f;
+    sta::Pin* pin = vertex->pin();
     sta::LibertyPort *lib_port = net_netlist_->libertyPort(pin);
-    if (lib_port == nullptr) {
-        return -1;
-        throw std::runtime_error("Null LibertyPort returned in getLoadCapacitance");
-    }
-
     return lib_port->capacitance();
 }
 
-// Print out the direction of a pin.
-void StaInterface::pinDirectionCout(sta::Pin *pin) {
-    const sta::PortDirection *direction = net_netlist_->direction(pin);
-    if (direction->isInput()) {
-        std::cout << "This pin is an input.\n";
-    } else if (direction->isOutput()) {
-        std::cout << "This pin is an output.\n";
-    } else if (direction->isBidirect()) {
-        std::cout << "This pin is bidirectional.\n";
-    } else if (direction->isPower()) {
-        std::cout << "This pin is a power pin.\n";
-    } else if (direction->isGround()) {
-        std::cout << "This pin is a ground pin.\n";
-    } else {
-        std::cout << "Unknown pin direction.\n";
-    }
-}
-
-// //Debug function: prints details about the vertex, its pin, and associated gate.
-void StaInterface::debugCout(sta::Vertex *vertex) {
-    std::cout << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
-    std::cout << "vertex - " << vertex << " pin - " << vertex->pin() << std::endl;
-    std::cout << "this pin " << net_netlist_->pathName(vertex->pin()) << std::endl;
-    //std::cout << "Load Cap " << getLoadCapacitance(vertex->pin()) << std::endl;
-    sta::Instance *instance = net_netlist_->instance(vertex->pin());
-    sta::Cell *cell = net_netlist_->cell(instance);
-    std::cout << "gate name " << net_netlist_->name(cell) << std::endl;
-    std::cout << "gate name " << net_netlist_->name(net_netlist_->cell(net_netlist_->instance(vertex->pin()))) << std::endl;
-
-    /*
-    float* annotation = getAnnotationArray(vertex);
-    std::cout << "Annotation: "
-              << annotation[0] << ' ' 
-              << annotation[1] << ' ' 
-              << annotation[2] << ' ' 
-              << annotation[3] << ' ' << std::endl;
-    */
-    pinDirectionCout(vertex->pin());
-}
-
-// Update the annotation for a vertex based on its fanin and, if output, via the ML model// we get new annotation of fanout (ZN pin) from previous pin 
-void StaInterface::updateAnnotation_fanout_from_fanin(sta::Vertex *vertex) {
-    const sta::PortDirection *direction = net_netlist_->direction(vertex->pin());
-    sta::VertexInEdgeIterator edge_iter(vertex, sta_graph_);
-    
-    // If current vertex is an INPUT vertex, mark it visited and return.
-    if (!vertex->hasFanin()) {
-        visitedDP[vertex] = true;
-        return;
-    }
-    // Else if current vertex is an OUTPUT vertex, simply return.
-    else if (!vertex->hasFanout()) {
-        return;
-    }
-    // If the vertex's pin is an input (assumption: the input pin is driven by only one pin)
-    else if (direction->isInput()) {
-        // Copy annotation of previous pin to this
-        sta::Edge *next_edge = edge_iter.next();
-        sta::Vertex *prev_vertex = next_edge->from(sta_graph_);
-        setAnnotationArray(vertex, getAnnotationArray(prev_vertex));
-    } 
-    else if (direction->isOutput()) { // send this to model
-        std::vector<float*> annotation;
-        std::vector<float*> slew;
-        // ASSUMPTION: the gate name is obtained from the instance associated with the pin
-        float cap;
-        cap = getLoadCapacitance(vertex->pin());
-
-        sta::Instance *instance = net_netlist_->instance(vertex->pin());
-        sta::Cell *cell = net_netlist_->cell(instance);
-        const char* model_to_use =  net_netlist_->name(cell);
-        while (edge_iter.hasNext()) {
-            sta::Edge *next_edge = edge_iter.next();
-            sta::Vertex *prev_vertex = next_edge->from(sta_graph_);
-            annotation.push_back(getAnnotationArray(prev_vertex));
-            slew.push_back(getSlew(prev_vertex)); // Assuming getSlew returns a pointer to float; dereference it.
-        }
-        // Call the ML model to get updated annotation.
-        auto [ch_anno, ch_slew, ch_cap, up_anno, up_slew, up_cap] = 
-            ml_model_.getModelAnnotation(model_to_use, annotation, cap, slew);
-    
-        if (ch_anno)
-             setAnnotationArray(vertex, up_anno);
-        // If needed, update load capacitance and slew (assuming functions exist).
-        // if (ch_cap)
-        //    setLoadCapacitance(vertex->pin(), up_cap);
-        if (ch_slew)
-            setSlew(vertex, up_slew);
-    }
-    else {
-        std::cout << "some Exception on StaInterface::updateAnnotation" << std::endl;
-    }
-    // Mark vertex as visited.
-    visitedDP[vertex] = true;
-}
-
 // Sets the annotation array for a vertex.
-// NOTE: This implementation simply reassigns the pointer, so ensure this matches your intended behavior.
-void StaInterface::setAnnotationArray(sta::Vertex *vertex, float *new_annotation) {
+void StaInterface::setAnnotationArray(sta::Vertex *vertex, float *new_annotation, float *old_annotation) {
     float* arrivals = sta_graph_->arrivals(vertex);
     float new_arrivals[4];
     if (arrivals != nullptr) {
@@ -164,122 +74,90 @@ void StaInterface::setAnnotationArray(sta::Vertex *vertex, float *new_annotation
     } else {
         std::cerr << "Error: arrivals() returned nullptr!" << std::endl;
     }
+
 }
 
-// Recursively update vertices in the graph, handling cycles.
-void StaInterface::recursiveUpdate(sta::Vertex *vertex) {
-    // If the vertex is already being updated in a cycle, return.
-    if (cycleDect[vertex])
-        return;
-
-    cycleDect[vertex] = true;
-    sta::VertexInEdgeIterator edge_iter(vertex, sta_graph_);
-        
-    while (edge_iter.hasNext()) {
-        sta::Edge *next_edge = edge_iter.next();
-        sta::Vertex *prev_vertex = next_edge->from(sta_graph_);
-        //debugCout(prev_vertex);
-        recursiveUpdate(prev_vertex);
-    }
-    updateAnnotation_fanout_from_fanin(vertex);
-    return;
-}
-
-// Main function to update the entire graph.
-void StaInterface::updateGraph() {
-    // Initialize visitedDP for all vertices.
-    for (unsigned int i = 1; i <= sta_graph_->vertexCount(); i++)
-        visitedDP[sta_graph_->vertex(i)] = false;
-
-    // Initialize cycle detection map for all vertices.
-    for (unsigned int i = 1; i <= sta_graph_->vertexCount(); i++)
-        cycleDect[sta_graph_->vertex(i)] = false;
-
-    // Iterate over all vertices and perform recursive updates.
-    for (unsigned int index = 1; index <= sta_graph_->vertexCount(); index++) {
-        sta::Vertex *vertex = sta_graph_->vertex(index);
-
-        /*
-        if ((vertex == nullptr) || 
-            (vertex->arrivals() == nullptr)) {
-            continue;
-        }
-        */
-        //std::cout << "==================================================" << std::endl;
-        // std::cout<<"recrsivUpd for"<<net_netlist_->pathName(vertex->pin())<<std::endl;
-        recursiveUpdate(vertex);
-
-     }
-}
-
-void StaInterface::updateAnnotation_fanin_from_fanin(sta::Vertex *fanout){
-    sta::VertexInEdgeIterator edge_iter(fanout, sta_graph_);
-    std::vector<float*> annotation;
-    std::vector<float*> slew;
-    std::vector<sta::Vertex*> fanin;
-    // ASSUMPTION: the gate name is obtained from the instance associated with the pin
-    // float cap;
-    // cap = getLoadCapacitance(fanout->pin());
-    std::vector<float> cap;
-    sta::Instance *instance = net_netlist_->instance(fanout->pin());
+const char* StaInterface::getGateName(sta::Vertex *vertex){
+    if (vertex == nullptr)
+        return nullptr;
+    sta::Instance *instance = net_netlist_->instance(vertex->pin());
     sta::Cell *cell = net_netlist_->cell(instance);
-    const char* model_to_use =  net_netlist_->name(cell);
-    while (edge_iter.hasNext()) {
-        
-        sta::Edge *next_edge = edge_iter.next();
-        sta::Vertex *prev_vertex = next_edge->from(sta_graph_);
-        cap.push_back(getLoadCapacitance(prev_vertex->pin()));
-        fanin.push_back(prev_vertex);
-        annotation.push_back(getAnnotationArray(prev_vertex));
-        slew.push_back(getSlew(prev_vertex)); // Assuming getSlew returns a pointer to float; dereference it.
-    }
-    // Apdating annotation for pin A
-    std::cout << "[fetching] model annotation for " << net_netlist_->pathName(fanout->pin()) << std::endl;
-    // Call the ML model to get updated annotation.
-    auto [ch_anno, ch_slew, ch_cap, up_anno, up_slew, up_cap] = 
-         ml_model_.getModelAnnotation(model_to_use, annotation, cap[0], slew);
-    
-    if (ch_anno)
-        setAnnotationArray(fanin[0], up_anno);
-    // If needed, update load capacitance and slew (assuming functions exist).
-    // if (ch_cap)
-    //    setLoadCapacitance(fanin[0]->pin(), up_cap);
-    if (ch_slew)
-        setSlew(fanin[0], up_slew);
-
-
-    // Apdating annotaionn for pin B
-
-    std::swap(annotation[0],annotation[1]);
-    std::swap(slew[0],slew[1]);
-    // Call the ML model to get updated annotation.
-    std::tie(ch_anno, ch_slew, ch_cap, up_anno, up_slew, up_cap) =
-            ml_model_.getModelAnnotation(model_to_use, annotation, cap[1], slew);
-
-    
-    if (ch_anno)
-        setAnnotationArray(fanin[1], up_anno);
-    // If needed, update load capacitance and slew (assuming functions exist).
-    // if (ch_cap)
-    //    setLoadCapacitance(fanin[0]->pin(), up_cap);
-    if (ch_slew)
-        setSlew(fanin[1], up_slew);
-
-
+    return net_netlist_->name(cell);
 }
 
-void StaInterface::hackModelUpdate(sta::Vertex *vertex){
-    // this->debugCout(vertex);
+bool StaInterface::updateAnnotation_fanin_from_fanin(DataToModel* data) {
+    data->setLoadCap(getLoadCapacitance(data->getZn()));
+    data->setGateName(getGateName(data->getZn()));
 
+    sta::VertexInEdgeIterator edge_iter(data->getZn(), sta_graph_);
+    while (edge_iter.hasNext()) {
+        sta::Edge *next_edge = edge_iter.next();
+        sta::Vertex *prev_vertex = next_edge->from(sta_graph_);
+        if (data->getA() == nullptr)
+            data->setA(prev_vertex);
+        else
+            data->setB(prev_vertex);
+    }
+    auto it = visited_vertex_.find(data->getA());
+    if (it != visited_vertex_.end())
+        return false;
 
-    // std::cout << " [debug] loadcapasitance is " << getLoadCapacitance(vertex->pin()) << std::endl;
+    data->setOriginalArrivalA(getAnnotationArray(data->getA()));
+    data->setOriginalArrivalB(getAnnotationArray(data->getB()));
+    float* sl = getSlew(data->getA());
+    if (sl)
+        data->setSlewA(sl[0],sl[1]);
+    sl = getSlew(data->getB());
+    if (sl)
+        data->setSlewB(sl[0],sl[1]);
+
+    ml_model_->Modify(data);
+    checkArrivalArray(data->getA());
+    std::cout << "[setAnnotaiton] setting annotation for A"<< std::endl;
+    setAnnotationArray(data->getA(), data->getModifiedArrivalA(),data->getOriginalArrivalA());
+    checkArrivalArray(data->getA());
+    checkArrivalArray(data->getB());
+    std::cout << "[setAnnotaiton] setting annotation for B"<< std::endl;
+    setAnnotationArray(data->getB(), data->getModifiedArrivalB(), data->getOriginalArrivalB());
+    checkArrivalArray(data->getB());
+    setSlew(data->getA(), data->getModifiedSlewA());
+    setSlew(data->getB(), data->getModifiedSlewB());
+    return true;
+}
+
+void StaInterface::hackModelUpdate(sta::Vertex *vertex) {
     const sta::PortDirection *direction = net_netlist_->direction(vertex->pin());
-
-    if (direction->isOutput()){ 
-        const char* pin_name = net_netlist_->pathName(vertex->pin());
-        if (vertex->hasFanout()) { // Else it will be OUT pin(fan-out of module netlist)
-            updateAnnotation_fanin_from_fanin(vertex);
+    if (direction->isOutput()) {
+        if (vertex->hasFanout()) {
+            if (ml_model_->modelAvailable(getGateName(vertex))){
+                DataToModel* data = new DataToModel(vertex);
+                bool updated = updateAnnotation_fanin_from_fanin(data);
+                // delete data;
+                if (updated){
+                    visited_vertex_[data->getA()] = data;
+                    visited_vertex_[data->getB()] = data;
+                }
+            }
         }
     }
 }
 
+
+void StaInterface::updateReInitialized(sta::Vertex *vertex) {
+    // Look up whether this fan-in was part of an output we ML-touched
+    auto it = visited_vertex_.find(vertex);
+    if (it == visited_vertex_.end())
+        return;
+    DataToModel* data = it->second;
+
+    // If this is pin A, apply A’s modified vs. original; else B’s
+    if (vertex == data->getA()) {
+        setAnnotationArray(data->getA(),
+                           data->getModifiedArrivalA(),
+                           data->getOriginalArrivalA());
+    } else if (vertex == data->getB()) {
+        setAnnotationArray(data->getB(),
+                           data->getModifiedArrivalB(),
+                           data->getOriginalArrivalB());
+    }
+}

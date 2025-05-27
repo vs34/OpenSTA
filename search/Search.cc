@@ -1209,6 +1209,8 @@ ArrivalVisitor::visit(Vertex *vertex)
     constrainedRequiredsInvalid(vertex, is_clk);
   }
   enqueueRefPinInputDelays(pin);
+  sta_interface_.updateReInitialized(vertex); // MODIFICATION this will update the value which were reinitalized after output pin
+
 }
 
 // When a clock arrival changes, the required time changes for any

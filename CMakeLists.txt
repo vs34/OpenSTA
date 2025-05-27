@@ -238,6 +238,8 @@ set(STA_SOURCE
 
   modification/StaInterface.cc     # modification 
   modification/MlModel.cc          # modification 
+  modification/DataToModel.cc      # modification 
+
   )
 
 # Source files.
