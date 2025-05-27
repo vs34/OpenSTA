@@ -94,11 +94,11 @@ bool MlModel::modelAvailable(const std::string& modelName) const {
 
 
 float MlModel::minMaxScale(float x, float minVal, float maxVal) const {
-    return (x - minVal) / (maxVal - minVal)*1000000000000;
+    return (x - minVal) / (maxVal - minVal);
 }
 
 float MlModel::inverseMinMaxScale(float s, float minVal, float maxVal) const {
-    return s * (maxVal - minVal) + minVal*100000000000000;
+    return s * (maxVal - minVal) + minVal;
 }
 
 std::pair<float, float> MlModel::calculateSkew(const std::vector<float*>& annos) const {

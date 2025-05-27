@@ -98,6 +98,10 @@ public:
   VertexId vertexCount() { return vertices_->size(); }
   Arrival *makeArrivals(Vertex *vertex,
 			uint32_t count);
+
+  void changeArrivals(Vertex *vertex, // MODIFICATION
+			Arrival* new_arrivals);
+
   Arrival *arrivals(const Vertex *vertex) const;
   void deleteArrivals(Vertex *vertex);
   Required *makeRequireds(Vertex *vertex,

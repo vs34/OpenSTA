@@ -67,7 +67,10 @@ void StaInterface::setAnnotationArray(sta::Vertex *vertex, float *new_annotation
             else
                 new_arrivals[a] = arrivals[a];
         }
-//     vertex->setArrivals(new_arrivals);
+    // vertex->setArrivals(new_arrivals);
+    sta_graph_->changeArrivals(vertex,new_arrivals);
+
+    arrivals = new_arrivals;
     if (anotation_update)
         std::cout << "[UPDATE] annotaion updated for "<< net_netlist_->pathName(vertex->pin()) <<  std::endl;
         

@@ -580,6 +580,14 @@ Graph::makeArrivals(Vertex *vertex,
   return arrivals;
 }
 
+void
+Graph::changeArrivals(Vertex *vertex,
+                    Arrival* new_arrivals)  // MODIFICATION
+{
+  vertex->setArrivals(new_arrivals);
+  return;
+}
+
 Arrival *
 Graph::arrivals(const Vertex *vertex) const
 {
