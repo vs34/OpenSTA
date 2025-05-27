@@ -1,10 +1,10 @@
 {
-  "lazyLoad": true,
+  "lazyLoad": true ,
   "models": [
     {
       "name": "nand2x1_sc",
-      "path": "/pkg/git/OpenSTA/modification/model.json",
-      "modify_annotation": true,
+      "path": "nand2x1_model.json",
+      "modify_annotation": true, 
       "inputFormat": ["load", "slew_a", "slew_b", "skew_ab"],
       "outputFormat": ["rise_delay", "rise_slew"],
       "scaleInput": [
