@@ -84,6 +84,39 @@ The hook for model-based annotation is invoked from:
 ArrivalVisitor::visit()  // Located in search/Search.cc
 ```
 
+## Approach
+
+Assumption: the ML model modifies the annotation (arrival) of the fanin pins (input pins) of each gate to capture MIS effects on the output pin. We integrate this within the SIS flow of OpenSTA by hijacking the fanin arrival before computing the output arrival.
+
+1. **ArrivalVisitor Hook**  
+   In `search/Search.cc`, the `ArrivalVisitor::visit` method drives the STA graph traversal. We insert our modification just before OpenSTA computes the output-pin arrivals by calling `hackModelUpdate` in `modification/StaInterface.cc`.
+
+2. **Identify Output Pin**  
+   In `StaInterface::hackModelUpdate(Vertex*)`, we check if the current vertex corresponds to an output pin (`direction->isOutput()`) and has fanout. If so, and an ML model is available for its cell, we proceed.
+
+3. **Gather Fanin Data**  
+   `updateAnnotation_fanin_from_fanin(DataToModel*)` builds a `DataToModel` object containing:
+   - The output vertex `Zn`
+   - Fanin vertices A and B
+   - Original arrival arrays (`getAnnotationArray`)
+   - Slew information (`getSlew`)
+   - Load capacitance on the output pin (`getLoadCapacitance`)
+
+4. **ML Inference**  
+   `MlModel::Modify(DataToModel*)` takes the original fanin arrivals and slews, constructs two input vectors (one for A→Y, one for B→Y, swapping A/B in the “slew” and “skew” features), invokes the FDeep model, and decodes the scaled outputs back to physical arrival/slew values.
+
+5. **Apply Modified Arrivals**  
+   Back in `updateAnnotation_fanin_from_fanin`, we write the modified arrival arrays into the graph via a new public `Graph::changeArrivals` helper (a friend of `Vertex`), updating A and B’s arrival annotations.
+
+6. **Resume SIS Flow**  
+   With fanin arrivals modified, OpenSTA’s existing combinational traversal computes the output-pin arrivals (for Y) including the ML-captured MIS effect.
+
+**Assumptions**  
+- ML-model configuration is per-cell (per-model) in `models_config.json`.  
+- If a model is missing or `modify_annotation` is false, we leave original SIS arrivals untouched.  
+- We only modify fanin arrivals, then let the standard OpenSTA path computation propagate to the output.
+- the Modify part of the code could be wrong, but there will be an easy fix for that
+
 ---
 
 
