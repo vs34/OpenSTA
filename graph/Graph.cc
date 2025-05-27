@@ -584,8 +584,17 @@ void
 Graph::changeArrivals(Vertex *vertex,
                     Arrival* new_arrivals)  // MODIFICATION
 {
-  vertex->setArrivals(new_arrivals);
+    Arrival *heap_copy = new Arrival[4];
+
+  // 3) copy in the values
+  std::memcpy(heap_copy,
+              new_arrivals,
+              sizeof(Arrival) * 4);
+
+  // 4) install it
+  vertex->setArrivals(heap_copy);
   return;
+
 }
 
 Arrival *
