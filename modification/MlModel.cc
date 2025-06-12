@@ -94,10 +94,15 @@ bool MlModel::modelAvailable(const std::string& modelName) const {
 
 
 float MlModel::minMaxScale(float x, float minVal, float maxVal) const {
+    // std::cout << "original value " << x << std::endl;
+    // std::cout << "after scaleing value " << (x - minVal) / (maxVal - minVal) << std::endl;
     return (x - minVal) / (maxVal - minVal);
 }
 
 float MlModel::inverseMinMaxScale(float s, float minVal, float maxVal) const {
+    // std::cout << "intput is " << s << std::endl;
+    // std::cout << "{{{{{SCALLLING}}}}}] " << minVal << " " << maxVal << std::endl; 
+    // std::cout << "output is " << s * (maxVal - minVal) + minVal << std::endl;
     return s * (maxVal - minVal) + minVal;
 }
 
@@ -131,14 +136,22 @@ std::vector<float> MlModel::constructInput(const ModelConfig& cfg,
     for (size_t i = 0; i < cfg.inputFormat.size(); ++i) {
         auto key = cfg.inputFormat[i];
         auto [mn, mx] = cfg.scaleInput[i];
-        if (key == "load")
-            in.push_back(minMaxScale(load, mn, mx));
-        else if (key == "slew_a")
+        if (key == "load"){
+            // std::cout << "loadcap scaling =========== " << std::endl;
+            in.push_back(minMaxScale(2.0e-14, mn, mx));
+        }
+        else if (key == "slew_a"){
+            // std::cout << "slew_a  scaling =========== " << std::endl;
             in.push_back(minMaxScale(slews[0][1], mn, mx));
-        else if (key == "slew_b")
+        }
+        else if (key == "slew_b"){
+            // std::cout << "slew_b  scaling =========== " << std::endl;
             in.push_back(minMaxScale(slews[1][1], mn, mx));
-        else if (key == "skew_ab")
+        }
+        else if (key == "skew_ab"){
+            // std::cout << "skew_ab scaling =========== " << std::endl;
             in.push_back(minMaxScale(calculateSkew(annos).first, mn, mx));
+        }
         else
             std::cerr << "[Warn] Unknown key " << key << std::endl;
     }

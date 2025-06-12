@@ -36,11 +36,23 @@ float* StaInterface::getSlew(sta::Vertex *vertex) {
 }
 
 void StaInterface::setSlew(sta::Vertex *vertex, std::pair<float, float> newslew) {
+    float* orig = getSlew(vertex);
+    float* ns = (float*)malloc(2*sizeof(float));
     if (newslew.first != -1)
-        vertex->slews()[0] = newslew.first;
-
+        ns[0] = newslew.first;
+    else
+        ns[0] = orig[0];
     if (newslew.second != -1)
-        vertex->slews()[1] = newslew.second;
+        ns[1] = newslew.second;
+    else
+        ns[1] = orig[1];
+
+    // if (newslew.first != -1)
+        // vertex->slews()[0] = newslew.first;
+
+    // if (newslew.second != -1)
+        // vertex->slews()[1] = newslew.second;
+    sta_graph_->changeSlews(vertex,ns);
 }
 
 // Get the load capacitance for a pin by querying the LibertyPort.
@@ -157,9 +169,11 @@ void StaInterface::updateReInitialized(sta::Vertex *vertex) {
         setAnnotationArray(data->getA(),
                            data->getModifiedArrivalA(),
                            data->getOriginalArrivalA());
+        setSlew(data->getA(), data->getModifiedSlewA());
     } else if (vertex == data->getB()) {
         setAnnotationArray(data->getB(),
                            data->getModifiedArrivalB(),
                            data->getOriginalArrivalB());
+        setSlew(data->getB(), data->getModifiedSlewB());
     }
 }
