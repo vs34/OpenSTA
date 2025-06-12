@@ -102,6 +102,9 @@ public:
   void changeArrivals(Vertex *vertex, // MODIFICATION
 			Arrival* new_arrivals);
 
+  void changeSlews(Vertex *vertex,  // MODIFICATION
+            Slew *slew);
+
   Arrival *arrivals(const Vertex *vertex) const;
   void deleteArrivals(Vertex *vertex);
   Required *makeRequireds(Vertex *vertex,

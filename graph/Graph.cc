@@ -36,6 +36,10 @@
 #include "Network.hh"
 #include "DcalcAnalysisPt.hh"
 
+#include <iostream> // MODIFICATION
+#include <stdio.h>
+
+
 namespace sta {
 
 ////////////////////////////////////////////////////////////////
@@ -581,9 +585,22 @@ Graph::makeArrivals(Vertex *vertex,
 }
 
 void
+Graph::changeSlews(Vertex *vertex,  // MODIFICATION
+        Slew *slew)
+{
+    vertex->setSlews(slew);
+}
+
+
+void
 Graph::changeArrivals(Vertex *vertex,
                     Arrival* new_arrivals)  // MODIFICATION
 {
+    if (!new_arrivals) {
+        std::cout << "Error: new_arrivals is null.\n";
+        return;
+    }
+
     Arrival *heap_copy = new Arrival[4];
 
   // 3) copy in the values
