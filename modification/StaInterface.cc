@@ -72,7 +72,7 @@ void StaInterface::setAnnotationArray(sta::Vertex *vertex, float *new_annotation
         bool anotation_update = false;
         for (int a = 0 ; a < 4 ; a++){
             if (new_annotation[a] != -1){  // this is set my model class if -1 no change
-                std::cout << "[[[[[[[[UPDATE]]]]]]]] annotation change "<<arrivals[a]<<" to "<<new_annotation[a]<<std::endl;
+                // std::cout << "[[[[[[[[UPDATE]]]]]]]] annotation change "<<arrivals[a]<<" to "<<new_annotation[a]<<std::endl;
                 new_arrivals[a] = new_annotation[a];
                 anotation_update = true;
             }
@@ -100,18 +100,21 @@ const char* StaInterface::getGateName(sta::Vertex *vertex){
 }
 
 bool StaInterface::updateAnnotation_fanin_from_fanin(DataToModel* data) {
-    data->setLoadCap(getLoadCapacitance(data->getZn()));
+    // data->setLoadCap(getLoadCapacitance(data->getZn())); // my dumb assumtion that the load cap is independent of pin
+    // std::cout << "the cap Zn" << getLoadCapacitance(data->getZn()) << '\n'; // the Zn cap is 0 i thought it would be same for A,B
     data->setGateName(getGateName(data->getZn()));
 
     sta::VertexInEdgeIterator edge_iter(data->getZn(), sta_graph_);
     while (edge_iter.hasNext()) {
         sta::Edge *next_edge = edge_iter.next();
         sta::Vertex *prev_vertex = next_edge->from(sta_graph_);
-        if (data->getA() == nullptr)
-            data->setA(prev_vertex);
-        else
+        if (data->getB() == nullptr)
             data->setB(prev_vertex);
+        else
+            data->setA(prev_vertex);
     }
+    data->setLoadCapA(getLoadCapacitance(data->getA())); 
+    data->setLoadCapB(getLoadCapacitance(data->getB()));
     auto it = visited_vertex_.find(data->getA());
     if (it != visited_vertex_.end())
         return false;
@@ -126,13 +129,15 @@ bool StaInterface::updateAnnotation_fanin_from_fanin(DataToModel* data) {
         data->setSlewB(sl[0],sl[1]);
 
     ml_model_->Modify(data);
-    checkArrivalArray(data->getA());
-    std::cout << "[setAnnotaiton] setting annotation for A"<< std::endl;
+    // std::cout << "[setAnnotaiton] setting annotation for A"<< std::endl << "old anno";
+    // checkArrivalArray(data->getA());
     setAnnotationArray(data->getA(), data->getModifiedArrivalA(),data->getOriginalArrivalA());
-    checkArrivalArray(data->getA());
-    checkArrivalArray(data->getB());
-    std::cout << "[setAnnotaiton] setting annotation for B"<< std::endl;
+    // std::cout << "new anno";
+    // checkArrivalArray(data->getA());
+    // std::cout << "[setAnnotaiton] setting annotation for B"<< std::endl << "old anno";
+    // checkArrivalArray(data->getB()); 
     setAnnotationArray(data->getB(), data->getModifiedArrivalB(), data->getOriginalArrivalB());
+    // std::cout << "new anno";
     checkArrivalArray(data->getB());
     setSlew(data->getA(), data->getModifiedSlewA());
     setSlew(data->getB(), data->getModifiedSlewB());

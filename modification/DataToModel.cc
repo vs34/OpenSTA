@@ -3,7 +3,8 @@
 // Constructor
 DataToModel::DataToModel(sta::Vertex* zn)
     : Zn(zn),
-      load_cap(-1.0f),
+      load_cap_A(-1.0f),
+      load_cap_B(-1.0f),
       A(nullptr), B(nullptr),
       original_arrival_A(nullptr),
       original_arrival_B(nullptr),
@@ -21,8 +22,12 @@ void DataToModel::setGateName(const char* name) {
     gate_name = name;
 }
 
-void DataToModel::setLoadCap(float cap) {
-    load_cap = cap;
+void DataToModel::setLoadCapA(float cap) {
+    load_cap_A = cap;
+}
+
+void DataToModel::setLoadCapB(float cap) {
+    load_cap_B = cap;
 }
 
 void DataToModel::setA(sta::Vertex* a) {
@@ -70,8 +75,12 @@ sta::Vertex* DataToModel::getZn() const {
     return Zn;
 }
 
-float DataToModel::getLoadCap() const {
-    return load_cap;
+float DataToModel::getLoadCapA() const {
+    return load_cap_A;
+}
+
+float DataToModel::getLoadCapB() const {
+    return load_cap_B;
 }
 
 sta::Vertex* DataToModel::getA() const {

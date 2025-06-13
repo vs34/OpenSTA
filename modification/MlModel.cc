@@ -138,7 +138,7 @@ std::vector<float> MlModel::constructInput(const ModelConfig& cfg,
         auto [mn, mx] = cfg.scaleInput[i];
         if (key == "load"){
             // std::cout << "loadcap scaling =========== " << std::endl;
-            in.push_back(minMaxScale(2.0e-14, mn, mx));
+            in.push_back(minMaxScale(load, mn, mx));
         }
         else if (key == "slew_a"){
             // std::cout << "slew_a  scaling =========== " << std::endl;
@@ -195,9 +195,9 @@ void MlModel::Modify(DataToModel* data) {
     };
 
     // Predict for A
-    auto pA = predict(cfg.name, constructInput(cfg, data->getLoadCap(), Aann, Aslew));
+    auto pA = predict(cfg.name, constructInput(cfg, data->getLoadCapA(), Aann, Aslew));
     // And for B
-    auto pB = predict(cfg.name, constructInput(cfg, data->getLoadCap(), Bann, Bslew));
+    auto pB = predict(cfg.name, constructInput(cfg, data->getLoadCapB(), Bann, Bslew));
 
     // Allocate output arrays
     float* outA = new float[4]{-1,-1,-1,-1};
@@ -208,6 +208,8 @@ void MlModel::Modify(DataToModel* data) {
     decodeOutput(cfg, pA, outA, sA);
     decodeOutput(cfg, pB, outB, sB);
 
+    // std::cout << "new annotation for A " << *outA << ' ' << *sA << '\n';
+    // std::cout << "new annotation for B " << *outB << ' ' << *sB << '\n';
     data->setModifiedArrivalA(outA);
     data->setModifiedSlewA(sA[0], sA[1]);
     data->setModifiedArrivalB(outB);

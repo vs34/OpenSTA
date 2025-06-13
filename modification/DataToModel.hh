@@ -14,7 +14,8 @@ public:
     const char* gate_name;
     // Data members
     sta::Vertex* Zn;
-    float load_cap;
+    float load_cap_A;
+    float load_cap_B;
     sta::Vertex* A;
     sta::Vertex* B;
     float* original_arrival_A;
@@ -28,7 +29,8 @@ public:
 
     // Setters
     void setGateName(const char* name);
-    void setLoadCap(float cap);
+    void setLoadCapA(float cap);
+    void setLoadCapB(float cap);
     void setA(sta::Vertex* a);
     void setB(sta::Vertex* b);
     void setOriginalArrivalA(float* arrival);
@@ -42,7 +44,8 @@ public:
 
     // Getters
     sta::Vertex* getZn() const;
-    float getLoadCap() const;
+    float getLoadCapA() const;
+    float getLoadCapB() const;
     sta::Vertex* getA() const;
     sta::Vertex* getB() const;
     float* getOriginalArrivalA() const;
