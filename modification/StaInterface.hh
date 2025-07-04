@@ -22,6 +22,7 @@ private:
     void setAnnotationArray(sta::Vertex *vertex, float *new_annotation, float *old_annotation);
     const char* getGateName(sta::Vertex *vertex);
     bool updateAnnotation_fanin_from_fanin(DataToModel* data);
+    bool updateAnnotation_out_pin(DataToModel *data);
     float getLoadCapacitance(sta::Vertex *vertex);
     void checkArrivalArray(sta::Vertex *vertex);
 
@@ -29,7 +30,8 @@ public:
     StaInterface(sta::Graph* graph, sta::Network* network);
     void setGraph(sta::Graph* graph);
     // void updateGraph();
-    void hackModelUpdate(sta::Vertex *vertex);
+    void hackModelUpdate_in(sta::Vertex *vertex);
+    void hackModelUpdate_out(sta::Vertex *vertex);
     void updateReInitialized(sta::Vertex *vertex);
     // std::map<sta::Vertex*, bool> visitedDP;
     // std::map<sta::Vertex*, bool> cycleDect;

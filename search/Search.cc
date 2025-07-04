@@ -1143,7 +1143,7 @@ ArrivalVisitor::visit(Vertex *vertex)
 {
 
   sta_interface_.setGraph(graph_);
-  sta_interface_.hackModelUpdate(vertex);       // MODIFICATION the annotation to this vertex is added here
+  // sta_interface_.hackModelUpdate_in(vertex);       // MODIFICATION the annotation to this vertex is added here
                                                // Modifing the FanIn of this at the spot
 
   debugPrint(debug_, "search", 2, "find arrivals %s",
@@ -1204,11 +1204,11 @@ ArrivalVisitor::visit(Vertex *vertex)
     // Only update arrivals when delays change by more than
     // fuzzyEqual can distinguish.
     search_->setVertexArrivals(vertex, tag_bldr_);
-    // MODIFICATION
     search_->tnsInvalid(vertex);
     constrainedRequiredsInvalid(vertex, is_clk);
   }
   enqueueRefPinInputDelays(pin);
+  sta_interface_.hackModelUpdate_out(vertex);       // MODIFICATION the annotation to this vertex is added here
   // sta_interface_.updateReInitialized(vertex); // MODIFICATION this will update the value which were reinitalized after output pin
 
 }

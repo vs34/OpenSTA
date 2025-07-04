@@ -35,7 +35,8 @@ public:
                                const std::vector<float>& input_data);
 
     // Perform A/B-swap dual inference and update DataToModel
-    void Modify(DataToModel* data);
+    void Modify_out(DataToModel* data);
+    void Modify_in(DataToModel* data);
 
     bool modelAvailable(const std::string& modelName) const;
 

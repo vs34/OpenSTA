@@ -9,11 +9,19 @@ module top (
 
   // Instantiate the standard‐cell NAND2 from your SC library.
   // Note: the port names in the instance must match your cell definition.
+  
+
+  wire temp;
   nand2x1_sc NAND1 (
     .A   (A1),
     .B   (A2),
-    .Y  (ZN)
+    .Y  (temp)
   );
 
+  nand2x1_sc NAND1 (
+    .A   (temp),
+    .B   (temp),
+    .Y  (ZN)
+  );
 endmodule
 

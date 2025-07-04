@@ -14,12 +14,12 @@ create_clock -name virtual_clk -period 1.0   ;# 1 ns period
 set_input_transition 0.016 [get_ports A1]
 set_input_transition 0.021 [get_ports A2]
 
-# 6) Set input delays to define timing startpoints
+# 6) Set input delays to define timing startpoints more temporal distance
 set_input_delay 1.0 -clock virtual_clk [get_ports A1]
 set_input_delay 0.0 -clock virtual_clk [get_ports A2]
 
 # 7) Set load at ZN (fake output environment)
-set_load 0.020 [get_ports ZN]              ;# 0.1 fF cap
+set_load 0.020 [get_ports ZN]
 set_output_delay 0.0 -clock virtual_clk [get_ports ZN]
 
 # 8) Report max delay paths

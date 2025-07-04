@@ -150,7 +150,7 @@ std::vector<float> MlModel::constructInput(const ModelConfig& cfg,
         }
         else if (key == "skew_ab"){
             // std::cout << "skew_ab scaling =========== " << std::endl;
-            in.push_back(minMaxScale(calculateSkew(annos).first, mn, mx));
+            in.push_back(minMaxScale(calculateSkew(annos).second, mn, mx));
         }
         else
             std::cerr << "[Warn] Unknown key " << key << std::endl;
@@ -165,12 +165,12 @@ void MlModel::decodeOutput(const ModelConfig& cfg,
         auto key = cfg.outputFormat[i];
         auto [mn, mx] = cfg.scaleOutput[i];
         float v = inverseMinMaxScale(pred[i], mn, mx);
-        if (key == "rise_delay") anno[0] = v;
+        if (key == "rise_delay") anno[1] = v;
         else if (key == "rise_slew") slew[0] = v;
     }
 }
 
-void MlModel::Modify(DataToModel* data) {
+void MlModel::Modify_in(DataToModel* data) {
     auto it = models_.find(data->gate_name);
     if (it == models_.end()) {
         std::cerr << "[Error] no model for " << data->gate_name << std::endl;
@@ -217,5 +217,42 @@ void MlModel::Modify(DataToModel* data) {
 
     delete[] Aslew[0]; delete[] Aslew[1];
     delete[] Bslew[0]; delete[] Bslew[1];
+}
+
+
+void MlModel::Modify_out(DataToModel* data) {
+    auto it = models_.find(data->gate_name);
+    if (it == models_.end()) {
+        std::cerr << "[Error] no model for " << data->gate_name << std::endl;
+        return;
+    }
+    auto const& cfg = it->second.first;
+    if (!cfg.modifyAnnotation) {
+        // JSON said no modify
+        return;
+    }
+
+    // Gather A/B data
+    std::vector<float*> Aann = { data->getOriginalArrivalA(), data->getOriginalArrivalB() };
+    std::vector<float*> Aslew = {
+        new float[2]{ data->getSlewA().first, data->getSlewA().second },
+        new float[2]{ data->getSlewB().first, data->getSlewB().second }
+    };
+
+    // Predict for A
+    auto pA = predict(cfg.name, constructInput(cfg, data->getLoadCapA(), Aann, Aslew));
+
+    // Allocate output arrays
+    float* outA = new float[4]{-1,-1,-1,-1};
+    float* sA   = new float[2]{-1,-1};
+
+    decodeOutput(cfg, pA, outA, sA);
+
+    // std::cout << "new annotation for A " << *outA << ' ' << *sA << '\n';
+    // std::cout << "new annotation for B " << *outB << ' ' << *sB << '\n';
+    data->setModifiedArrivalZn(outA);
+    data->setModifiedSlewZn(sA[0], sA[1]);
+
+    delete[] Aslew[0]; delete[] Aslew[1];
 }
 

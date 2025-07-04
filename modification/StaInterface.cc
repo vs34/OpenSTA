@@ -66,22 +66,27 @@ float StaInterface::getLoadCapacitance(sta::Vertex *vertex) {
 
 // Sets the annotation array for a vertex.
 void StaInterface::setAnnotationArray(sta::Vertex *vertex, float *new_annotation, float *old_annotation) {
-    float* arrivals = sta_graph_->arrivals(vertex);
+    // float* arrivals = sta_graph_->arrivals(vertex);
+    float* arrivals = old_annotation;
     float new_arrivals[4];
     if (arrivals != nullptr) {
         bool anotation_update = false;
         for (int a = 0 ; a < 4 ; a++){
             if (new_annotation[a] != -1){  // this is set my model class if -1 no change
                 // std::cout << "[[[[[[[[UPDATE]]]]]]]] annotation change "<<arrivals[a]<<" to "<<new_annotation[a]<<std::endl;
+                std::cout << "index is " << a << " value is " << new_annotation[a] << '\n';
                 new_arrivals[a] = new_annotation[a];
                 anotation_update = true;
+                arrivals[a] = arrivals[a];
             }
-            else
+            else{
                 new_arrivals[a] = arrivals[a];
+            }
         }
     // vertex->setArrivals(new_arrivals);
     sta_graph_->changeArrivals(vertex,new_arrivals);
-
+    std::cout << "old annotation " << old_annotation[0] << ' ' << old_annotation[1] << ' ' << old_annotation[2] << ' ' << old_annotation[3] << '\n';
+    std::cout << "new annotation " << new_arrivals[0] << ' ' << new_arrivals[1] << ' ' << new_arrivals[2] << ' ' << new_arrivals[3] << '\n';
     if (anotation_update)
         std::cout << "[UPDATE] annotaion updated for "<< net_netlist_->pathName(vertex->pin()) <<  std::endl;
         
@@ -100,10 +105,12 @@ const char* StaInterface::getGateName(sta::Vertex *vertex){
 }
 
 bool StaInterface::updateAnnotation_fanin_from_fanin(DataToModel* data) {
-    // data->setLoadCap(getLoadCapacitance(data->getZn())); // my dumb assumtion that the load cap is independent of pin
-    // std::cout << "the cap Zn" << getLoadCapacitance(data->getZn()) << '\n'; // the Zn cap is 0 i thought it would be same for A,B
-    data->setGateName(getGateName(data->getZn()));
+    // this function assume that the model modify the fan in annotations so that the 
+    // new anotation calculated by the normal SIS flow of OpenSTA will accure MIS effects
 
+    // data->setLoadCap(getLoadCapacitance(data->getZn())); // my dumb assumtion that the load cap is independent of pin
+    data->setGateName(getGateName(data->getZn()));
+    float cap_zn = getLoadCapacitance(data->getZn());
     sta::VertexInEdgeIterator edge_iter(data->getZn(), sta_graph_);
     while (edge_iter.hasNext()) {
         sta::Edge *next_edge = edge_iter.next();
@@ -115,6 +122,9 @@ bool StaInterface::updateAnnotation_fanin_from_fanin(DataToModel* data) {
     }
     data->setLoadCapA(getLoadCapacitance(data->getA())); 
     data->setLoadCapB(getLoadCapacitance(data->getB()));
+    std::cout << "the cap A  : " << getLoadCapacitance(data->getA()) << '\n'; // the Zn cap is 0 i thought it would be same for A,B
+    std::cout << "the cap B  : " << getLoadCapacitance(data->getB()) << '\n'; // the Zn cap is 0 i thought it would be same for A,B
+    std::cout << "the cap Zn : " << cap_zn << '\n'; // the Zn cap is 0 i thought it would be same for A,B
     auto it = visited_vertex_.find(data->getA());
     if (it != visited_vertex_.end())
         return false;
@@ -128,7 +138,7 @@ bool StaInterface::updateAnnotation_fanin_from_fanin(DataToModel* data) {
     if (sl)
         data->setSlewB(sl[0],sl[1]);
 
-    ml_model_->Modify(data);
+    ml_model_->Modify_in(data);
     // std::cout << "[setAnnotaiton] setting annotation for A"<< std::endl << "old anno";
     // checkArrivalArray(data->getA());
     setAnnotationArray(data->getA(), data->getModifiedArrivalA(),data->getOriginalArrivalA());
@@ -144,7 +154,67 @@ bool StaInterface::updateAnnotation_fanin_from_fanin(DataToModel* data) {
     return true;
 }
 
-void StaInterface::hackModelUpdate(sta::Vertex *vertex) {
+
+bool StaInterface::updateAnnotation_out_pin(DataToModel *data){
+    // this function assume the ML model is normal SPICE model 
+    // so this get the annotations from the model givng fan in 
+
+    // data->setLoadCap(getLoadCapacitance(data->getZn())); // my dumb assumtion that the load cap is independent of pin
+    data->setGateName(getGateName(data->getZn()));
+    data->setLoadCapZn(getLoadCapacitance(data->getZn()));
+    sta::VertexInEdgeIterator edge_iter(data->getZn(), sta_graph_);
+    while (edge_iter.hasNext()) {
+        sta::Edge *next_edge = edge_iter.next();
+        sta::Vertex *prev_vertex = next_edge->from(sta_graph_);
+        if (data->getB() == nullptr)
+            data->setB(prev_vertex);
+        else
+            data->setA(prev_vertex);
+    }
+    data->setLoadCapA(getLoadCapacitance(data->getA())); // no need for this 
+    data->setLoadCapB(getLoadCapacitance(data->getB())); // remove while opti.
+    std::cout << "the cap A  : " << getLoadCapacitance(data->getA()) << '\n'; // the Zn cap is 0 i thought it would be same for A,B
+    std::cout << "the cap B  : " << getLoadCapacitance(data->getB()) << '\n';
+    std::cout << "the cap Zn : " << getLoadCapacitance(data->getZn()) << '\n';
+
+
+    data->setOriginalArrivalA(getAnnotationArray(data->getA()));
+    data->setOriginalArrivalB(getAnnotationArray(data->getB()));
+    data->setOriginalArrivalZn(getAnnotationArray(data->getZn()));
+
+    float* sl = getSlew(data->getA());
+    if (sl)
+        data->setSlewA(sl[0],sl[1]);
+    sl = getSlew(data->getB());
+    if (sl)
+        data->setSlewB(sl[0],sl[1]);
+
+    ml_model_->Modify_out(data);
+
+    // std::cout << "the cap A  : " << data -> getOriginalArrivalA()[0] << '\n'; // the Zn cap is 0 i thought it would be same for A,B
+    // std::cout << "the cap B  : " << data -> getOriginalArrivalB()[0] << '\n';
+    // std::cout << "the cap Zn : " << data -> getOriginalArrivalZn()[0] << '\n';
+
+    // std::cout << "the cap A  : " << data -> getOriginalArrivalA()[1] << '\n'; // the Zn cap is 0 i thought it would be same for A,B
+    // std::cout << "the cap B  : " << data -> getOriginalArrivalB()[1] << '\n';
+    // std::cout << "the cap Zn : " << data -> getOriginalArrivalZn()[1] << '\n';
+
+    // std::cout << "the cap A  : " << data -> getOriginalArrivalA()[2] << '\n'; // the Zn cap is 0 i thought it would be same for A,B
+    // std::cout << "the cap B  : " << data -> getOriginalArrivalB()[2] << '\n';
+    // std::cout << "the cap Zn : " << data -> getOriginalArrivalZn()[2] << '\n';
+
+    // std::cout << "the cap A  : " << data -> getOriginalArrivalA()[3] << '\n'; // the Zn cap is 0 i thought it would be same for A,B
+    // std::cout << "the cap B  : " << data -> getOriginalArrivalB()[3] << '\n';
+    // std::cout << "the cap Zn : " << data -> getOriginalArrivalZn()[3] << '\n';
+
+    setAnnotationArray(data->getZn(), data->getModifiedArrivalZn(), data->getOriginalArrivalZn());
+    setSlew(data->getZn(), data->getModifiedSlewZn());
+    return true;
+
+}
+
+
+void StaInterface::hackModelUpdate_in(sta::Vertex *vertex) {
     const sta::PortDirection *direction = net_netlist_->direction(vertex->pin());
     if (direction->isOutput()) {
         if (vertex->hasFanout()) {
@@ -161,6 +231,23 @@ void StaInterface::hackModelUpdate(sta::Vertex *vertex) {
     }
 }
 
+
+void StaInterface::hackModelUpdate_out(sta::Vertex *vertex) {
+    const sta::PortDirection *direction = net_netlist_->direction(vertex->pin());
+    if (direction->isOutput()) {
+        if (vertex->hasFanout()) {
+            if (ml_model_->modelAvailable(getGateName(vertex))){
+                DataToModel* data = new DataToModel(vertex);
+                bool updated = updateAnnotation_out_pin(data);
+                // delete data;
+                if (updated){
+                    visited_vertex_[data->getA()] = data;
+                    visited_vertex_[data->getB()] = data;
+                }
+            }
+        }
+    }
+}
 
 void StaInterface::updateReInitialized(sta::Vertex *vertex) {
     // Look up whether this fan-in was part of an output we ML-touched
