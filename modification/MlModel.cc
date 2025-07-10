@@ -138,19 +138,28 @@ std::vector<float> MlModel::constructInput(const ModelConfig& cfg,
         auto [mn, mx] = cfg.scaleInput[i];
         if (key == "load"){
             // std::cout << "loadcap scaling =========== " << std::endl;
-            in.push_back(minMaxScale(load, mn, mx));
+            std::cout << "load cap is : " << load << '\n';
+            // in.push_back(minMaxScale(load, mn, mx));
+            in.push_back(0.5);
+            std::cout << "normalized load is : " << in[in.size()-1] << '\n';
         }
         else if (key == "slew_a"){
             // std::cout << "slew_a  scaling =========== " << std::endl;
             in.push_back(minMaxScale(slews[0][1], mn, mx));
+            std::cout << "normalized slew_a is : " << in[in.size()-1] << '\n';
         }
         else if (key == "slew_b"){
             // std::cout << "slew_b  scaling =========== " << std::endl;
             in.push_back(minMaxScale(slews[1][1], mn, mx));
+            std::cout << "normalized slew_b is : " << in[in.size()-1] << '\n';
         }
         else if (key == "skew_ab"){
             // std::cout << "skew_ab scaling =========== " << std::endl;
-            in.push_back(minMaxScale(calculateSkew(annos).second, mn, mx));
+            float temp = calculateSkew(annos).second;
+            std::cout << "skew is : " << temp << '\n';
+            in.push_back(minMaxScale(temp, mn, mx));
+            std::cout << "normalized skew is : " << in[in.size()-1] << '\n';
+
         }
         else
             std::cerr << "[Warn] Unknown key " << key << std::endl;
@@ -164,9 +173,16 @@ void MlModel::decodeOutput(const ModelConfig& cfg,
     for (size_t i = 0; i < cfg.outputFormat.size(); ++i) {
         auto key = cfg.outputFormat[i];
         auto [mn, mx] = cfg.scaleOutput[i];
+
+        // std::cout << " output from model should be between 1 and 0 " << pred[i] << '\n';
+        
         float v = inverseMinMaxScale(pred[i], mn, mx);
-        if (key == "rise_delay") anno[1] = v;
-        else if (key == "rise_slew") slew[0] = v;
+        if (key == "rise_delay"){ 
+            anno[1] = v;
+        }
+        else if (key == "rise_slew") {
+            slew[0] = v;
+        }
     }
 }
 

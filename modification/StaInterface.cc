@@ -4,7 +4,8 @@
 #include <stdio.h>
 
 // Constructor: initialize the STA graph and network pointer, and get the singleton MlModel instance.
-StaInterface::StaInterface(sta::Graph* graph, sta::Network* network) :
+StaInterface::StaInterface(sta::Graph* graph, sta::Network* network,const sta::StaState* sta) :
+    god_class_(sta),
     sta_graph_(graph),
     net_netlist_(network),
     ml_model_(MlModel::getInstance())
@@ -56,12 +57,56 @@ void StaInterface::setSlew(sta::Vertex *vertex, std::pair<float, float> newslew)
 }
 
 // Get the load capacitance for a pin by querying the LibertyPort.
-float StaInterface::getLoadCapacitance(sta::Vertex *vertex) {
-    if (vertex == nullptr)
-        return -1.0f;
-    sta::Pin* pin = vertex->pin();
-    sta::LibertyPort *lib_port = net_netlist_->libertyPort(pin);
-    return lib_port->capacitance();
+// float StaInterface::getLoadCapacitance(sta::Vertex *vertex) {
+//     if (vertex == nullptr) // should not happen in real 
+//         return -1.0f;
+//     sta::Pin* pin = vertex->pin();
+//     sta::LibertyPort *lib_port = net_netlist_->libertyPort(pin);
+//     if (lib_port == nullptr) // checking
+//         return -1.0f;
+//     return lib_port->capacitance();
+// }
+
+// This is the corrected implementation for your class method.
+// It assumes your StaInterface class has the member 'const sta::StaState* god_class_;'
+
+float StaInterface::getLoadCapacitance(sta::Vertex *vertex)
+{
+  if (vertex == nullptr) {
+    return -1.0f; // Return an error code
+  }
+
+  // 1. Get the Pin from the Vertex.
+  sta::Pin* pin = vertex->pin();
+  if (pin == nullptr) {
+    return -1.0f;
+  }
+  
+  // 2. Get the delay calculator from the StaState object.
+  // We use the 'god_class_' member variable of your StaInterface class.
+  const sta::Dcalc* dcalc = god_class_->dcalc();
+
+  // 3. Define which timing corner and analysis condition to use.
+  const sta::Corner* corner = god_class_->corners()->defaultCorner();
+  const sta::MinMax* min_max = sta::MinMax::max();
+
+  if (corner == nullptr) {
+      // No default corner found, cannot proceed.
+      return -1.0f;
+  }
+  
+  // 4. Find the specific analysis point for this corner and condition.
+  const sta::DcalcAnalysisPt* dcalc_ap = corner->findDcalcAnalysisPt(min_max);
+  if (dcalc_ap == nullptr) {
+      // Analysis point not found for this corner.
+      return -1.0f;
+  }
+
+  // 5. Call the loadCap function with the Pin and analysis point
+  //    to get the final load capacitance.
+  float load_cap = dcalc->loadCap(pin, dcalc_ap);
+
+  return load_cap;
 }
 
 // Sets the annotation array for a vertex.
@@ -155,10 +200,30 @@ bool StaInterface::updateAnnotation_fanin_from_fanin(DataToModel* data) {
 }
 
 
+
+void StaInterface::debugCout(sta::Vertex *vertex) {
+    std::cout << " ########### DEBUG ###########" << '\n';
+    std::cout << "this pin " << net_netlist_->pathName(vertex->pin()) << std::endl;
+    //std::cout << "Load Cap " << getLoadCapacitance(vertex->pin()) << std::endl;
+    sta::Instance *instance = net_netlist_->instance(vertex->pin());
+    sta::Cell *cell = net_netlist_->cell(instance);
+    std::cout << "gate name " << net_netlist_->name(cell) << std::endl;
+    std::cout << "load cap of the " << getLoadCapacitance(vertex) << '\n';
+    std::cout << " ########### DEBUG ###########" << '\n';
+}
+
+
 bool StaInterface::updateAnnotation_out_pin(DataToModel *data){
     // this function assume the ML model is normal SPICE model 
     // so this get the annotations from the model givng fan in 
 
+    // sta::VertexOutEdgeIterator out_iter(data->getZn(), sta_graph_);
+    // while (out_iter.hasNext()) {
+        // sta::Edge *out_edge = out_iter.next();
+        // sta::Vertex *next_vertex = out_edge->from(sta_graph_); // the load cap should be here
+        // debugCout(next_vertex);
+    // }
+    
     // data->setLoadCap(getLoadCapacitance(data->getZn())); // my dumb assumtion that the load cap is independent of pin
     data->setGateName(getGateName(data->getZn()));
     data->setLoadCapZn(getLoadCapacitance(data->getZn()));
@@ -173,8 +238,11 @@ bool StaInterface::updateAnnotation_out_pin(DataToModel *data){
     }
     data->setLoadCapA(getLoadCapacitance(data->getA())); // no need for this 
     data->setLoadCapB(getLoadCapacitance(data->getB())); // remove while opti.
+    // debugCout(data->getA());
     std::cout << "the cap A  : " << getLoadCapacitance(data->getA()) << '\n'; // the Zn cap is 0 i thought it would be same for A,B
+    // debugCout(data->getB());
     std::cout << "the cap B  : " << getLoadCapacitance(data->getB()) << '\n';
+    // debugCout(data->getZn());
     std::cout << "the cap Zn : " << getLoadCapacitance(data->getZn()) << '\n';
 
 
@@ -233,6 +301,8 @@ void StaInterface::hackModelUpdate_in(sta::Vertex *vertex) {
 
 
 void StaInterface::hackModelUpdate_out(sta::Vertex *vertex) {
+
+    // debugCout(vertex);
     const sta::PortDirection *direction = net_netlist_->direction(vertex->pin());
     if (direction->isOutput()) {
         if (vertex->hasFanout()) {
@@ -241,8 +311,8 @@ void StaInterface::hackModelUpdate_out(sta::Vertex *vertex) {
                 bool updated = updateAnnotation_out_pin(data);
                 // delete data;
                 if (updated){
-                    visited_vertex_[data->getA()] = data;
-                    visited_vertex_[data->getB()] = data;
+                     visited_vertex_[data->getA()] = data;
+                     visited_vertex_[data->getB()] = data;
                 }
             }
         }

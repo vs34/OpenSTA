@@ -1074,7 +1074,7 @@ Search::findArrivalsSeed()
 ////////////////////////////////////////////////////////////////
 
 ArrivalVisitor::ArrivalVisitor(const StaState *sta) :
-  sta_interface_(graph(), network_),  // MODIFICATION 
+  sta_interface_(graph(), network_, sta),  // MODIFICATION 
   PathVisitor(nullptr, sta),
   always_save_prev_paths_(true)
 {
@@ -1086,7 +1086,7 @@ ArrivalVisitor::ArrivalVisitor(const StaState *sta) :
 ArrivalVisitor::ArrivalVisitor(bool always_to_endpoints,
 			       SearchPred *pred,
 			       const StaState *sta) :
-  sta_interface_(graph(), network_),  // MODIFICATION
+  sta_interface_(graph(), network_, sta),  // MODIFICATION
   PathVisitor(pred, sta)
 {
   init0();

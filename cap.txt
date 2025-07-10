@@ -1,0 +1,853 @@
+modification/StaInterface.cc:// Get the load capacitance for a pin by querying the LibertyPort.
+modification/StaInterface.cc:    return lib_port->capacitance();
+README.md:   - Load capacitance on the output pin (`getLoadCapacitance`)
+power/Power.cc:                 units_->capacitanceUnit()->asString(load_cap));
+power/Power.cc:             units_->capacitanceUnit()->asString(load_cap));
+util/Util.i:capacitance_ui_sta(double value)
+util/Util.i:  return Sta::sta()->units()->capacitanceUnit()->userToSta(value);
+util/Util.i:capacitance_sta_ui(double value)
+util/Util.i:  return Sta::sta()->units()->capacitanceUnit()->staToUser(value);
+util/Util.i:format_capacitance(const char *value,
+util/Util.i:  return Sta::sta()->units()->capacitanceUnit()->asString(value1, digits);
+parasitics/Parasitics.cc:    const Unit *cap_unit = units_->capacitanceUnit();
+parasitics/Parasitics.cc:                        cap_unit->asString(capacitance(parasitic)));
+parasitics/Parasitics.cc:// All load capacitance (except driver pin cap) is on the far side of
+parasitics/Parasitics.cc:// No wire resistance, so load is lumped capacitance.
+parasitics/Parasitics.cc:// Each load capacitance and wireload cap/fanout has resistance/fanout
+parasitics/Parasitics.tcl:  set c2 [capacitance_ui_sta $c2]
+parasitics/Parasitics.tcl:  set c1 [capacitance_ui_sta $c1]
+parasitics/ReduceParasitics.cc:	pin_caps_one_value_ &= lib_port->capacitanceIsOneValue();
+parasitics/ReduceParasitics.cc:// Find elmore delays on 2nd DFS search using downstream capacitances
+parasitics/ConcreteParasitics.hh:  float capacitance(const Parasitic *parasitic) const override;
+parasitics/ConcreteParasitics.cc:ConcretePi::capacitance() const
+parasitics/ConcreteParasitics.cc:ConcretePiElmore::capacitance() const
+parasitics/ConcreteParasitics.cc:  return ConcretePi::capacitance();
+parasitics/ConcreteParasitics.cc:ConcretePiPoleResidue::capacitance() const
+parasitics/ConcreteParasitics.cc:  return ConcretePi::capacitance();
+parasitics/ConcreteParasitics.cc:ConcreteParasiticNetwork::capacitance() const
+parasitics/ConcreteParasitics.cc:      cap += node->capacitance();
+parasitics/ConcreteParasitics.cc:      cap += node->capacitance();
+parasitics/ConcreteParasitics.cc:ConcreteParasitics::capacitance(const Parasitic *parasitic) const
+parasitics/ConcreteParasitics.cc:  return cparasitic->capacitance();
+parasitics/ConcreteParasitics.cc:  // Delete reduced models that depend on load pin capacitances.
+parasitics/ConcreteParasitics.cc:  return cnode->capacitance();
+parasitics/EstimateParasitics.cc:// For multiple driver nets, output pin capacitances are treated as
+parasitics/EstimateParasitics.cc:// No wire resistance, so load is lumped capacitance.
+parasitics/EstimateParasitics.cc:// All load capacitance (except driver pin cap) is on the far side of
+parasitics/EstimateParasitics.cc:// Each load capacitance and wireload cap/fanout has resistance/fanout
+parasitics/EstimateParasitics.cc:    // No resistance, so load is capacitance only.
+parasitics/SpefReader.cc:  // Net total capacitance is ignored.
+parasitics/ConcreteParasiticsPvt.hh:  virtual float capacitance() const = 0;
+parasitics/ConcreteParasiticsPvt.hh:  float capacitance() const;
+parasitics/ConcreteParasiticsPvt.hh:  float capacitance() const override;
+parasitics/ConcreteParasiticsPvt.hh:  float capacitance() const override { return 0.0; }
+parasitics/ConcreteParasiticsPvt.hh:  virtual float capacitance() const override;
+parasitics/ConcreteParasiticsPvt.hh:  virtual float capacitance() const;
+parasitics/ConcreteParasiticsPvt.hh:  float capacitance() const { return cap_; }
+tcl/CmdUtil.tcl:  foreach unit {"time" "capacitance" "resistance" "voltage" "current" "power" "distance"} {
+tcl/CmdUtil.tcl:  foreach unit {"time" "capacitance" "resistance" "voltage" "current" "power"} {
+tcl/CmdUtil.tcl:  {[-capacitance cap_unit] [-resistance res_unit] [-time time_unit]\
+tcl/CmdUtil.tcl:    keys {-capacitance -resistance -time -voltage -current -power \
+tcl/CmdUtil.tcl:  set_unit_values "capacitance" -capacitance "f" keys
+network/Network.tcl:    report_line " $port_name [liberty_port_direction $port]$enable$func[port_capacitance_str $port $corner $sta_report_default_digits]"
+network/Network.tcl:  report_net_cap $net "Pin" "pin_capacitance" $corner $digits
+network/Network.tcl:  report_net_cap $net "Wire" "wire_capacitance" $corner $digits
+network/Network.tcl:  report_net_cap $net "Total" "capacitance" $corner $digits
+network/Network.tcl:  report_line " $caption capacitance: [capacitance_range_str $cap_min $cap_max $digits]"
+network/Network.tcl:      set cap [port_capacitance_str $liberty_port $corner $digits]
+network/Network.tcl:      set wire_cap " wire [capacitance_range_str $cap_min $cap_max $digits]"
+network/Network.tcl:      set pin_cap " pin [capacitance_range_str $cap_min $cap_max $digits]"
+network/Network.tcl:    set cap [port_capacitance_str $liberty_port $corner $digits]
+network/Network.tcl:proc port_capacitance_str { liberty_port corner digits } {
+network/Network.tcl:  set cap_min [$liberty_port capacitance $corner "min"]
+network/Network.tcl:  set cap_max [$liberty_port capacitance $corner "max"]
+network/Network.tcl:    return " [capacitance_range_str $cap_min $cap_max $digits]"
+network/Network.tcl:proc capacitance_range_str { cap_min cap_max digits } {
+network/Network.tcl:    return "[format_capacitance $cap_max $digits]"
+network/Network.tcl:    return "[format_capacitance $cap_min $digits]-[format_capacitance $cap_max $digits]"
+network/Network.tcl:proc capacitances_str { cap_r_min cap_r_max cap_f_min cap_f_max digits } {
+network/Network.tcl:    return "[format_capacitance $cap $digits]"
+network/Network.tcl:    return "r [format_capacitance $cap_r_min $digits] f [format_capacitance $cap_f_min $digits]"
+network/Network.tcl:    return "r [format_capacitance $cap_r_min $digits]:[format_capacitance $cap_r_max $digits] f [format_capacitance $cap_f_min $digits]:[format_capacitance $cap_f_max $digits]"
+network/Network.i:capacitance(Corner *corner,
+network/Network.i:pin_capacitance(Corner *corner,
+network/Network.i:wire_capacitance(Corner *corner,
+sdc/Sdc.cc:Sdc::capacitanceLimit(Cell *cell,
+sdc/Sdc.cc:Sdc::capacitanceLimit(Port *port,
+sdc/Sdc.cc:Sdc::capacitanceLimit(Pin *pin,
+sdc/Sdc.cc:  return corner_port->capacitance(rf, min_max, op_cond, inst_pvt);
+sdc/Sdc.tcl:  {[-time time_unit] [-capacitance cap_unit] [-resistance res_unit]\
+sdc/Sdc.tcl:    keys {-capacitance -resistance -time -voltage -current -power -distance} \
+sdc/Sdc.tcl:  check_unit "capacitance" -capacitance "f" keys
+sdc/Sdc.tcl:     [-pin_load] [-wire_load] capacitance objects}
+sdc/Sdc.tcl:  check_positive_float "capacitance" $cap
+sdc/Sdc.tcl:  set cap [capacitance_ui_sta $cap]
+sdc/Sdc.tcl:define_cmd_args "set_max_capacitance" {cap objects}
+sdc/Sdc.tcl:proc set_max_capacitance { cap objects } {
+sdc/Sdc.tcl:  set_capacitance_limit $cap "max" $objects
+sdc/Sdc.tcl:proc set_capacitance_limit { cap min_max objects } {
+sdc/Sdc.tcl:  set cap [capacitance_ui_sta $cap]
+sdc/Sdc.tcl:    set_cell_capacitance_limit $cell $min_max $cap
+sdc/Sdc.tcl:    set_port_capacitance_limit $port $min_max $cap
+sdc/Sdc.tcl:    set_pin_capacitance_limit $pin $min_max $cap
+sdc/Sdc.tcl:define_cmd_args "set_min_capacitance" {cap objects}
+sdc/Sdc.tcl:proc set_min_capacitance { cap objects } {
+sdc/Sdc.tcl:  set_capacitance_limit $cap "min" $objects
+sdc/WriteSdc.cc:  writeCapLimits(MinMax::min(), "set_min_capacitance");
+sdc/WriteSdc.cc:  writeCapLimits(MinMax::max(), "set_max_capacitance");
+sdc/WriteSdc.cc:  sdc_->capacitanceLimit(cell_, min_max, cap, exists);
+sdc/WriteSdc.cc:  writeRiseFallMinMaxCmd(sdc_cmd, values, units_->capacitanceUnit()->scale(),
+sdc/WriteSdc.cc:  return cap / units_->capacitanceUnit()->scale();
+sdc/Sdc.i:set_port_capacitance_limit(Port *port,
+sdc/Sdc.i:set_pin_capacitance_limit(Pin *pin,
+sdc/Sdc.i:set_cell_capacitance_limit(Cell *cell,
+spice/WriteSpice.cc:      // Write half the capacitance because the coupled net will do the same.
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:SWIGINTERN float LibertyPort_capacitance(LibertyPort *self,Corner *corner,MinMax const *min_max){
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  return sta->capacitance(self, corner, min_max);
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:SWIGINTERN float Net_capacitance(Net *self,Corner *corner,MinMax const *min_max){
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:SWIGINTERN float Net_pin_capacitance(Net *self,Corner *corner,MinMax const *min_max){
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:SWIGINTERN float Net_wire_capacitance(Net *self,Corner *corner,MinMax const *min_max){
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:set_port_capacitance_limit(Port *port,
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:set_pin_capacitance_limit(Pin *pin,
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:set_cell_capacitance_limit(Cell *cell,
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:check_capacitance_limits(Net *net,
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:max_capacitance_violation_count()
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:max_capacitance_check_slack()
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  float capacitance;
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  sta->maxCapacitanceCheck(pin, capacitance, slack, limit);
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  return sta->units()->capacitanceUnit()->staToUser(slack);
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:max_capacitance_check_limit()
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  float capacitance;
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  sta->maxCapacitanceCheck(pin, capacitance, slack, limit);
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  return sta->units()->capacitanceUnit()->staToUser(limit);
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:report_capacitance_limit_short_header()
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:report_capacitance_limit_short(Pin *pin,
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:report_capacitance_limit_verbose(Pin *pin,
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:capacitance_ui_sta(double value)
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  return Sta::sta()->units()->capacitanceUnit()->userToSta(value);
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:capacitance_sta_ui(double value)
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  return Sta::sta()->units()->capacitanceUnit()->staToUser(value);
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:format_capacitance(const char *value,
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  return Sta::sta()->units()->capacitanceUnit()->asString(value1, digits);
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_LibertyPort_capacitance(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"ooo:sta::LibertyPort_capacitance self corner min_max ",(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LibertyPort_capacitance" "', argument " "1"" of type '" "LibertyPort *""'"); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "LibertyPort_capacitance" "', argument " "2"" of type '" "Corner *""'"); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      result = (float)LibertyPort_capacitance(arg1,arg2,(MinMax const *)arg3); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    {"capacitance", _wrap_LibertyPort_capacitance}, 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_Net_capacitance(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"ooo:sta::Net_capacitance self corner min_max ",(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Net_capacitance" "', argument " "1"" of type '" "Net *""'"); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Net_capacitance" "', argument " "2"" of type '" "Corner *""'"); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      result = (float)Net_capacitance(arg1,arg2,(MinMax const *)arg3); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_Net_pin_capacitance(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"ooo:sta::Net_pin_capacitance self corner min_max ",(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Net_pin_capacitance" "', argument " "1"" of type '" "Net *""'"); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Net_pin_capacitance" "', argument " "2"" of type '" "Corner *""'"); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      result = (float)Net_pin_capacitance(arg1,arg2,(MinMax const *)arg3); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_Net_wire_capacitance(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"ooo:sta::Net_wire_capacitance self corner min_max ",(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Net_wire_capacitance" "', argument " "1"" of type '" "Net *""'"); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Net_wire_capacitance" "', argument " "2"" of type '" "Corner *""'"); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      result = (float)Net_wire_capacitance(arg1,arg2,(MinMax const *)arg3); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    {"capacitance", _wrap_Net_capacitance}, 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    {"pin_capacitance", _wrap_Net_pin_capacitance}, 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    {"wire_capacitance", _wrap_Net_wire_capacitance}, 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_set_port_capacitance_limit(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"ooo:sta::set_port_capacitance_limit port min_max cap ",(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "set_port_capacitance_limit" "', argument " "1"" of type '" "Port *""'"); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "set_port_capacitance_limit" "', argument " "3"" of type '" "float""'");
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      set_port_capacitance_limit(arg1,(MinMax const *)arg2,arg3); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_set_pin_capacitance_limit(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"ooo:sta::set_pin_capacitance_limit pin min_max cap ",(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "set_pin_capacitance_limit" "', argument " "1"" of type '" "Pin *""'"); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "set_pin_capacitance_limit" "', argument " "3"" of type '" "float""'");
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      set_pin_capacitance_limit(arg1,(MinMax const *)arg2,arg3); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_set_cell_capacitance_limit(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"ooo:sta::set_cell_capacitance_limit cell min_max cap ",(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "set_cell_capacitance_limit" "', argument " "1"" of type '" "Cell *""'"); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "set_cell_capacitance_limit" "', argument " "3"" of type '" "float""'");
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      set_cell_capacitance_limit(arg1,(MinMax const *)arg2,arg3); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_check_capacitance_limits(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"oooo:sta::check_capacitance_limits net violators corner min_max ",(void *)0,(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "check_capacitance_limits" "', argument " "1"" of type '" "Net *""'"); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "check_capacitance_limits" "', argument " "2"" of type '" "bool""'");
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "check_capacitance_limits" "', argument " "3"" of type '" "Corner const *""'"); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      result = check_capacitance_limits(arg1,arg2,(Corner const *)arg3,(MinMax const *)arg4); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_max_capacitance_violation_count(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,":sta::max_capacitance_violation_count ") == TCL_ERROR) SWIG_fail;
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      result = max_capacitance_violation_count(); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_max_capacitance_check_slack(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,":sta::max_capacitance_check_slack ") == TCL_ERROR) SWIG_fail;
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      result = (float)max_capacitance_check_slack(); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_max_capacitance_check_limit(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,":sta::max_capacitance_check_limit ") == TCL_ERROR) SWIG_fail;
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      result = (float)max_capacitance_check_limit(); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_report_capacitance_limit_short_header(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,":sta::report_capacitance_limit_short_header ") == TCL_ERROR) SWIG_fail;
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      report_capacitance_limit_short_header(); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_report_capacitance_limit_short(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"ooo:sta::report_capacitance_limit_short pin corner min_max ",(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "report_capacitance_limit_short" "', argument " "1"" of type '" "Pin *""'"); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "report_capacitance_limit_short" "', argument " "2"" of type '" "Corner const *""'"); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      report_capacitance_limit_short(arg1,(Corner const *)arg2,(MinMax const *)arg3); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_report_capacitance_limit_verbose(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"ooo:sta::report_capacitance_limit_verbose pin corner min_max ",(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "report_capacitance_limit_verbose" "', argument " "1"" of type '" "Pin *""'"); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "report_capacitance_limit_verbose" "', argument " "2"" of type '" "Corner const *""'"); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      report_capacitance_limit_verbose(arg1,(Corner const *)arg2,(MinMax const *)arg3); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_capacitance_ui_sta(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"o:sta::capacitance_ui_sta value ",(void *)0) == TCL_ERROR) SWIG_fail;
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "capacitance_ui_sta" "', argument " "1"" of type '" "double""'");
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      result = (double)capacitance_ui_sta(arg1); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_capacitance_sta_ui(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"o:sta::capacitance_sta_ui value ",(void *)0) == TCL_ERROR) SWIG_fail;
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "capacitance_sta_ui" "', argument " "1"" of type '" "double""'");
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      result = (double)capacitance_sta_ui(arg1); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_format_capacitance(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"oo:sta::format_capacitance value digits ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "format_capacitance" "', argument " "1"" of type '" "char const *""'");
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "format_capacitance" "', argument " "2"" of type '" "int""'");
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      result = (char *)format_capacitance((char const *)arg1,arg2); 
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "LibertyPort_capacitance", (swig_wrapper_func) _wrap_LibertyPort_capacitance, NULL},
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "Net_capacitance", (swig_wrapper_func) _wrap_Net_capacitance, NULL},
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "Net_pin_capacitance", (swig_wrapper_func) _wrap_Net_pin_capacitance, NULL},
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "Net_wire_capacitance", (swig_wrapper_func) _wrap_Net_wire_capacitance, NULL},
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "set_port_capacitance_limit", (swig_wrapper_func) _wrap_set_port_capacitance_limit, NULL},
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "set_pin_capacitance_limit", (swig_wrapper_func) _wrap_set_pin_capacitance_limit, NULL},
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "set_cell_capacitance_limit", (swig_wrapper_func) _wrap_set_cell_capacitance_limit, NULL},
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "check_capacitance_limits", (swig_wrapper_func) _wrap_check_capacitance_limits, NULL},
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "max_capacitance_violation_count", (swig_wrapper_func) _wrap_max_capacitance_violation_count, NULL},
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "max_capacitance_check_slack", (swig_wrapper_func) _wrap_max_capacitance_check_slack, NULL},
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "max_capacitance_check_limit", (swig_wrapper_func) _wrap_max_capacitance_check_limit, NULL},
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "report_capacitance_limit_short_header", (swig_wrapper_func) _wrap_report_capacitance_limit_short_header, NULL},
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "report_capacitance_limit_short", (swig_wrapper_func) _wrap_report_capacitance_limit_short, NULL},
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "report_capacitance_limit_verbose", (swig_wrapper_func) _wrap_report_capacitance_limit_verbose, NULL},
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "capacitance_ui_sta", (swig_wrapper_func) _wrap_capacitance_ui_sta, NULL},
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "capacitance_sta_ui", (swig_wrapper_func) _wrap_capacitance_sta_ui, NULL},
+cmake/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "format_capacitance", (swig_wrapper_func) _wrap_format_capacitance, NULL},
+doc/messages.txt:1218 LibertyReader.cc:2641     receiver_capacitance group not in timing or pin group.
+doc/ChangeLog.txt:The report fanout and capacitance fields are now shown on output pin lines rather
+doc/ChangeLog.txt:The report_check_types -min_fanout -max_fanout -max_capacitance -min_capacitance
+doc/ChangeLog.txt:  report_check_types [-min_fanout] [-max_fanout] [-max_capacitance] [-min_capacitance]
+doc/StaApi.txt: capacitance farads
+doc/StaApi.txt: load (RSPF pi model total capacitance). Wire delays are zero.
+doc/StaApi.txt: delays and effective capacitance as in DmpCeffElmoreDelayCalc.
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:SWIGINTERN float LibertyPort_capacitance(LibertyPort *self,Corner *corner,MinMax const *min_max){
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  return sta->capacitance(self, corner, min_max);
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:SWIGINTERN float Net_capacitance(Net *self,Corner *corner,MinMax const *min_max){
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:SWIGINTERN float Net_pin_capacitance(Net *self,Corner *corner,MinMax const *min_max){
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:SWIGINTERN float Net_wire_capacitance(Net *self,Corner *corner,MinMax const *min_max){
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:set_port_capacitance_limit(Port *port,
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:set_pin_capacitance_limit(Pin *pin,
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:set_cell_capacitance_limit(Cell *cell,
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:check_capacitance_limits(Net *net,
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:max_capacitance_violation_count()
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:max_capacitance_check_slack()
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  float capacitance;
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  sta->maxCapacitanceCheck(pin, capacitance, slack, limit);
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  return sta->units()->capacitanceUnit()->staToUser(slack);
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:max_capacitance_check_limit()
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  float capacitance;
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  sta->maxCapacitanceCheck(pin, capacitance, slack, limit);
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  return sta->units()->capacitanceUnit()->staToUser(limit);
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:report_capacitance_limit_short_header()
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:report_capacitance_limit_short(Pin *pin,
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:report_capacitance_limit_verbose(Pin *pin,
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:capacitance_ui_sta(double value)
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  return Sta::sta()->units()->capacitanceUnit()->userToSta(value);
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:capacitance_sta_ui(double value)
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  return Sta::sta()->units()->capacitanceUnit()->staToUser(value);
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:format_capacitance(const char *value,
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  return Sta::sta()->units()->capacitanceUnit()->asString(value1, digits);
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_LibertyPort_capacitance(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"ooo:sta::LibertyPort_capacitance self corner min_max ",(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LibertyPort_capacitance" "', argument " "1"" of type '" "LibertyPort *""'"); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "LibertyPort_capacitance" "', argument " "2"" of type '" "Corner *""'"); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      result = (float)LibertyPort_capacitance(arg1,arg2,(MinMax const *)arg3); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    {"capacitance", _wrap_LibertyPort_capacitance}, 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_Net_capacitance(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"ooo:sta::Net_capacitance self corner min_max ",(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Net_capacitance" "', argument " "1"" of type '" "Net *""'"); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Net_capacitance" "', argument " "2"" of type '" "Corner *""'"); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      result = (float)Net_capacitance(arg1,arg2,(MinMax const *)arg3); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_Net_pin_capacitance(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"ooo:sta::Net_pin_capacitance self corner min_max ",(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Net_pin_capacitance" "', argument " "1"" of type '" "Net *""'"); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Net_pin_capacitance" "', argument " "2"" of type '" "Corner *""'"); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      result = (float)Net_pin_capacitance(arg1,arg2,(MinMax const *)arg3); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_Net_wire_capacitance(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"ooo:sta::Net_wire_capacitance self corner min_max ",(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Net_wire_capacitance" "', argument " "1"" of type '" "Net *""'"); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Net_wire_capacitance" "', argument " "2"" of type '" "Corner *""'"); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      result = (float)Net_wire_capacitance(arg1,arg2,(MinMax const *)arg3); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    {"capacitance", _wrap_Net_capacitance}, 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    {"pin_capacitance", _wrap_Net_pin_capacitance}, 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    {"wire_capacitance", _wrap_Net_wire_capacitance}, 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_set_port_capacitance_limit(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"ooo:sta::set_port_capacitance_limit port min_max cap ",(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "set_port_capacitance_limit" "', argument " "1"" of type '" "Port *""'"); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "set_port_capacitance_limit" "', argument " "3"" of type '" "float""'");
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      set_port_capacitance_limit(arg1,(MinMax const *)arg2,arg3); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_set_pin_capacitance_limit(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"ooo:sta::set_pin_capacitance_limit pin min_max cap ",(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "set_pin_capacitance_limit" "', argument " "1"" of type '" "Pin *""'"); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "set_pin_capacitance_limit" "', argument " "3"" of type '" "float""'");
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      set_pin_capacitance_limit(arg1,(MinMax const *)arg2,arg3); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_set_cell_capacitance_limit(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"ooo:sta::set_cell_capacitance_limit cell min_max cap ",(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "set_cell_capacitance_limit" "', argument " "1"" of type '" "Cell *""'"); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "set_cell_capacitance_limit" "', argument " "3"" of type '" "float""'");
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      set_cell_capacitance_limit(arg1,(MinMax const *)arg2,arg3); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_check_capacitance_limits(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"oooo:sta::check_capacitance_limits net violators corner min_max ",(void *)0,(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "check_capacitance_limits" "', argument " "1"" of type '" "Net *""'"); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "check_capacitance_limits" "', argument " "2"" of type '" "bool""'");
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "check_capacitance_limits" "', argument " "3"" of type '" "Corner const *""'"); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      result = check_capacitance_limits(arg1,arg2,(Corner const *)arg3,(MinMax const *)arg4); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_max_capacitance_violation_count(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,":sta::max_capacitance_violation_count ") == TCL_ERROR) SWIG_fail;
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      result = max_capacitance_violation_count(); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_max_capacitance_check_slack(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,":sta::max_capacitance_check_slack ") == TCL_ERROR) SWIG_fail;
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      result = (float)max_capacitance_check_slack(); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_max_capacitance_check_limit(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,":sta::max_capacitance_check_limit ") == TCL_ERROR) SWIG_fail;
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      result = (float)max_capacitance_check_limit(); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_report_capacitance_limit_short_header(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,":sta::report_capacitance_limit_short_header ") == TCL_ERROR) SWIG_fail;
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      report_capacitance_limit_short_header(); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_report_capacitance_limit_short(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"ooo:sta::report_capacitance_limit_short pin corner min_max ",(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "report_capacitance_limit_short" "', argument " "1"" of type '" "Pin *""'"); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "report_capacitance_limit_short" "', argument " "2"" of type '" "Corner const *""'"); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      report_capacitance_limit_short(arg1,(Corner const *)arg2,(MinMax const *)arg3); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_report_capacitance_limit_verbose(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"ooo:sta::report_capacitance_limit_verbose pin corner min_max ",(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "report_capacitance_limit_verbose" "', argument " "1"" of type '" "Pin *""'"); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "report_capacitance_limit_verbose" "', argument " "2"" of type '" "Corner const *""'"); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      report_capacitance_limit_verbose(arg1,(Corner const *)arg2,(MinMax const *)arg3); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_capacitance_ui_sta(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"o:sta::capacitance_ui_sta value ",(void *)0) == TCL_ERROR) SWIG_fail;
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "capacitance_ui_sta" "', argument " "1"" of type '" "double""'");
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      result = (double)capacitance_ui_sta(arg1); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_capacitance_sta_ui(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"o:sta::capacitance_sta_ui value ",(void *)0) == TCL_ERROR) SWIG_fail;
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "capacitance_sta_ui" "', argument " "1"" of type '" "double""'");
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      result = (double)capacitance_sta_ui(arg1); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:_wrap_format_capacitance(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:  if (SWIG_GetArgs(interp, objc, objv,"oo:sta::format_capacitance value digits ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "format_capacitance" "', argument " "1"" of type '" "char const *""'");
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "format_capacitance" "', argument " "2"" of type '" "int""'");
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:      result = (char *)format_capacitance((char const *)arg1,arg2); 
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "LibertyPort_capacitance", (swig_wrapper_func) _wrap_LibertyPort_capacitance, NULL},
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "Net_capacitance", (swig_wrapper_func) _wrap_Net_capacitance, NULL},
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "Net_pin_capacitance", (swig_wrapper_func) _wrap_Net_pin_capacitance, NULL},
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "Net_wire_capacitance", (swig_wrapper_func) _wrap_Net_wire_capacitance, NULL},
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "set_port_capacitance_limit", (swig_wrapper_func) _wrap_set_port_capacitance_limit, NULL},
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "set_pin_capacitance_limit", (swig_wrapper_func) _wrap_set_pin_capacitance_limit, NULL},
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "set_cell_capacitance_limit", (swig_wrapper_func) _wrap_set_cell_capacitance_limit, NULL},
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "check_capacitance_limits", (swig_wrapper_func) _wrap_check_capacitance_limits, NULL},
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "max_capacitance_violation_count", (swig_wrapper_func) _wrap_max_capacitance_violation_count, NULL},
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "max_capacitance_check_slack", (swig_wrapper_func) _wrap_max_capacitance_check_slack, NULL},
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "max_capacitance_check_limit", (swig_wrapper_func) _wrap_max_capacitance_check_limit, NULL},
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "report_capacitance_limit_short_header", (swig_wrapper_func) _wrap_report_capacitance_limit_short_header, NULL},
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "report_capacitance_limit_short", (swig_wrapper_func) _wrap_report_capacitance_limit_short, NULL},
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "report_capacitance_limit_verbose", (swig_wrapper_func) _wrap_report_capacitance_limit_verbose, NULL},
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "capacitance_ui_sta", (swig_wrapper_func) _wrap_capacitance_ui_sta, NULL},
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "capacitance_sta_ui", (swig_wrapper_func) _wrap_capacitance_sta_ui, NULL},
+build/CMakeFiles/sta_swig.dir/StaAppTCL_wrap.cxx:    { SWIG_prefix "format_capacitance", (swig_wrapper_func) _wrap_format_capacitance, NULL},
+include/sta/LibertyClass.hh:  total_output_net_capacitance,
+include/sta/LibertyClass.hh:  equal_or_opposite_output_net_capacitance,
+include/sta/LibertyClass.hh:  related_out_total_output_net_capacitance,
+include/sta/Sta.hh:  // Set net wire capacitance (set_load -wire net).
+include/sta/Sta.hh:  // Liberty port capacitance.
+include/sta/Sta.hh:  float capacitance(const LibertyPort *port,
+include/sta/Sta.hh:  // pin_cap  = net pin capacitances + port external pin capacitance,
+include/sta/Sta.hh:  // wire_cap = annotated net capacitance + port external wire capacitance.
+include/sta/Sta.hh:			float &capacitance,
+include/sta/Sta.hh:                           float &capacitance,
+include/sta/Sta.hh:  CheckCapacitanceLimits *check_capacitance_limits_;
+include/sta/Units.hh:  Unit *capacitanceUnit() { return &capacitance_unit_; }
+include/sta/Units.hh:  const Unit *capacitanceUnit() const { return &capacitance_unit_; }
+include/sta/Units.hh:  Unit capacitance_unit_;
+include/sta/Wireload.hh:	   float capacitance,
+include/sta/Wireload.hh:  // Find wireload resistance/capacitance for fanout.
+include/sta/Wireload.hh:  float capacitance_;
+include/sta/Sdc.hh:  void capacitanceLimit(Port *port,
+include/sta/Sdc.hh:  void capacitanceLimit(Pin *pin,
+include/sta/Sdc.hh:  void capacitanceLimit(Cell *cell,
+include/sta/Sdc.hh:  // True if driver pin net has wire capacitance.
+include/sta/Sdc.hh:  // Net wire capacitance (set_load -wire net).
+include/sta/Sdc.hh:  // Pin capacitance derated by operating conditions and instance pvt.
+include/sta/Sdc.hh:  // Connected total capacitance.
+include/sta/Sdc.hh:  //  pin_cap  = pin capacitance + port external pin
+include/sta/Sdc.hh:  //  wire_cap = port external wire capacitance + net wire capacitance
+include/sta/TableModel.hh:  std::vector<TableModel*> capacitance_models_;
+include/sta/PortExtCap.hh:// Port external pin and wire capacitance (set_load -pin_load -wire_load).
+include/sta/Liberty.hh:enum class TableTemplateType { delay, power, output_current, capacitance, ocv };
+include/sta/Liberty.hh:  float capacitance() const;
+include/sta/Liberty.hh:  float capacitance(const MinMax *min_max) const;
+include/sta/Liberty.hh:  float capacitance(const RiseFall *rf,
+include/sta/Liberty.hh:  void capacitance(const RiseFall *rf,
+include/sta/Liberty.hh:  float capacitance(const RiseFall *rf,
+include/sta/Liberty.hh:  bool capacitanceIsOneValue() const;
+include/sta/Liberty.hh:  void capacitanceLimit(const MinMax *min_max,
+include/sta/Liberty.hh:  RiseFallMinMax capacitance_;
+include/sta/Parasitics.hh:  virtual float capacitance(const Parasitic *parasitic) const = 0;
+include/sta/Parasitics.hh:  // dependent because they do not include pin capacitances.
+include/sta/Parasitics.hh:  // True if the parasitic network caps include pin capacitances.
+include/sta/Parasitics.hh:  // Increment the grounded capacitance on node.
+include/sta/Parasitics.hh:  // Node capacitance to ground.
+dcalc/DmpCeff.hh:// Delay calculator using Dartu/Menezes/Pileggi effective capacitance
+dcalc/Arnoldi.txt:  capacitance of the nodes, c[j], also written as a
+dcalc/LumpedCapDelayCalc.cc:             units()->capacitanceUnit()->asString(load_cap));
+dcalc/LumpedCapDelayCalc.hh:// Liberty table model lumped capacitance arc delay calculator.
+dcalc/Arnoldi.hh:  virtual float capacitance() const;
+dcalc/GraphDelayCalc.cc:      wire_cap += parasitics_->capacitance(parasitic);
+dcalc/GraphDelayCalc.cc:      float parasitic_cap = parasitics_->capacitance(parasitic);
+dcalc/GraphDelayCalc.cc:    // Find pin and external pin/wire capacitance.
+dcalc/GraphDelayCalc.cc:      // Find pin and external pin/wire capacitance.
+dcalc/PrimaDelayCalc.hh:  vector<double> node_capacitances_;
+dcalc/ArnoldiDelayCalc.cc:             units_->capacitanceUnit()->asString(ctot));
+dcalc/ArnoldiDelayCalc.cc:               units_->capacitanceUnit()->asString(ctot),
+dcalc/ArnoldiDelayCalc.cc:                    "Invalid effective capacitance, using total capacitance");
+dcalc/ArnoldiDelayCalc.cc:             units_->capacitanceUnit()->asString(ceff));
+dcalc/DmpDelayCalc.cc:// effective capacitance and elmore delay.
+dcalc/DmpDelayCalc.cc:// effective capacitance and two poles/residues.
+dcalc/CcsCeffDelayCalc.cc:  capacitance_unit_(units_->capacitanceUnit()),
+dcalc/CcsCeffDelayCalc.cc:                 capacitance_unit_->asString(ceff));
+dcalc/DmpCeff.cc:             units_->capacitanceUnit()->asString(x_[DmpParam::ceff]));
+dcalc/DmpCeff.cc:                        units_->capacitanceUnit()->asString(c2_),
+dcalc/DmpCeff.cc:                        units_->capacitanceUnit()->asString(c1_),
+dcalc/DmpCeff.cc:             units_->capacitanceUnit()->asString(ceff_));
+dcalc/DmpCeff.cc:             units_->capacitanceUnit()->asString(c2),
+dcalc/DmpCeff.cc:             units_->capacitanceUnit()->asString(c1),
+dcalc/DmpCeff.cc:    const Unit *cap_unit = units->capacitanceUnit();
+dcalc/CcsCeffDelayCalc.hh:  const Unit *capacitance_unit_;
+dcalc/ArnoldiReduce.cc:rcmodel::capacitance() const
+dcalc/ArnoldiReduce.cc:                 units_->capacitanceUnit()->asString(p->c));
+dcalc/ArnoldiReduce.cc:             units_->capacitanceUnit()->asString(sum));
+dcalc/PrimaDelayCalc.cc:               units_->capacitanceUnit()->asString(ceff_[0]),
+dcalc/PrimaDelayCalc.cc:  node_capacitances_.clear();
+dcalc/PrimaDelayCalc.cc:      node_capacitances_.push_back(cap);
+dcalc/PrimaDelayCalc.cc:      node_capacitances_[node_idx] += cap;
+dcalc/PrimaDelayCalc.cc:      node_capacitances_[node_idx] += cap;
+dcalc/PrimaDelayCalc.cc:    stampCapacitance(node_idx, node_capacitances_[node_idx]);
+dcalc/PrimaDelayCalc.cc:// Grounded capacitance.
+dcalc/PrimaDelayCalc.cc:// Floating capacitance.
+test/liberty_arcs_one2one_2.lib:      capacitance : 1;
+test/report_json1.ok:      "capacitance": 3.742e-15,
+test/report_json1.ok:      "capacitance": 1.949e-15,
+test/report_json1.ok:      "capacitance": 3.742e-15,
+test/report_checks_src_attr.tcl:report_checks -path_group clk -fields {capacitance slew input_pin net src_attr}
+test/liberty_latch3.lib:    variable_2 : total_output_net_capacitance;
+test/liberty_latch3.lib:    variable_2 : total_output_net_capacitance;
+test/liberty_latch3.lib:      max_capacitance : 46.08;
+test/liberty_latch3.lib:      capacitance : 0.536816;
+test/liberty_latch3.lib:      rise_capacitance : 0.536816;
+test/liberty_latch3.lib:      rise_capacitance_range (0.44002, 0.536816);
+test/liberty_latch3.lib:      fall_capacitance : 0.536716;
+test/liberty_latch3.lib:      fall_capacitance_range (0.4323, 0.536716);
+test/liberty_latch3.lib:      capacitance : 0.654168;
+test/liberty_latch3.lib:      rise_capacitance : 0.654168;
+test/liberty_latch3.lib:      rise_capacitance_range (0.527218, 0.654168);
+test/liberty_latch3.lib:      fall_capacitance : 0.650172;
+test/liberty_latch3.lib:      fall_capacitance_range (0.529507, 0.650172);
+test/liberty_arcs_one2one_1.lib:      capacitance : 1;
+examples/sky130_hd_primitives.v: * decap: Decoupling capacitance filler.
+examples/sky130_hd.v: * decap: Decoupling capacitance filler.
+examples/sky130_hd.v: * decap: Decoupling capacitance filler.
+examples/sky130_hd.v: * decap: Decoupling capacitance filler.
+examples/sky130_hd.v: * decap: Decoupling capacitance filler.
+examples/sky130_hd.v: * decap: Decoupling capacitance filler.
+examples/sky130_hd.v: * decap: Decoupling capacitance filler.
+examples/sky130_hd.v: * decap: Decoupling capacitance filler.
+examples/sky130_hd.v: * decap: Decoupling capacitance filler.
+examples/sky130_hd.v: * decap: Decoupling capacitance filler.
+examples/sky130_hd.v: * decap: Decoupling capacitance filler.
+examples/sky130_hd.v: * lpflow_decapkapwr: Decoupling capacitance filler on keep-alive
+examples/sky130_hd.v: * lpflow_decapkapwr: Decoupling capacitance filler on keep-alive
+examples/sky130_hd.v: * lpflow_decapkapwr: Decoupling capacitance filler on keep-alive
+examples/sky130_hd.v: * lpflow_decapkapwr: Decoupling capacitance filler on keep-alive
+examples/sky130_hd.v: * lpflow_decapkapwr: Decoupling capacitance filler on keep-alive
+examples/sky130_hd.v: * lpflow_decapkapwr: Decoupling capacitance filler on keep-alive
+examples/sky130_hd.v: * lpflow_decapkapwr: Decoupling capacitance filler on keep-alive
+examples/sky130_hd.v: * lpflow_decapkapwr: Decoupling capacitance filler on keep-alive
+examples/sky130_hd.v: * lpflow_decapkapwr: Decoupling capacitance filler on keep-alive
+examples/sky130_hd.v: * lpflow_decapkapwr: Decoupling capacitance filler on keep-alive
+allclasses.txt:./include/sta/Liberty.hh:enum class TableTemplateType { delay, power, output_current, capacitance, ocv };
+README_original.md:* Integrated Dartu/Menezes/Pileggi RC effective capacitance algorithm
+search/CheckCapacitanceLimits.cc:			       CheckCapacitanceLimits *check_capacitance_limit,
+search/CheckCapacitanceLimits.cc:  CheckCapacitanceLimits *check_capacitance_limit_;
+search/CheckCapacitanceLimits.cc:							   CheckCapacitanceLimits *check_capacitance_limit,
+search/CheckCapacitanceLimits.cc:  check_capacitance_limit_(check_capacitance_limit),
+search/CheckCapacitanceLimits.cc:  float capacitance1, capacitance2;
+search/CheckCapacitanceLimits.cc:  check_capacitance_limit_->checkCapacitance(pin1, corner_, min_max_,
+search/CheckCapacitanceLimits.cc:					     corner1, rf1, capacitance1,
+search/CheckCapacitanceLimits.cc:  check_capacitance_limit_->checkCapacitance(pin2, corner_, min_max_,
+search/CheckCapacitanceLimits.cc:					     corner2, rf2, capacitance2,
+search/CheckCapacitanceLimits.cc:					 float &capacitance1,
+search/CheckCapacitanceLimits.cc:  capacitance1 = 0.0;
+search/CheckCapacitanceLimits.cc:		      corner1, rf1, capacitance1, limit1, slack1);
+search/CheckCapacitanceLimits.cc:                        corner1, rf1, capacitance1, limit1, slack1);
+search/CheckCapacitanceLimits.cc:					  float &capacitance1,
+search/CheckCapacitanceLimits.cc:		       corner1, rf1, capacitance1, slack1, limit1);
+search/CheckCapacitanceLimits.cc:  sdc->capacitanceLimit(top_cell, min_max,
+search/CheckCapacitanceLimits.cc:    sdc->capacitanceLimit(port, min_max, limit1, exists1);
+search/CheckCapacitanceLimits.cc:          corner_port->capacitanceLimit(min_max, limit1, exists1);
+search/CheckCapacitanceLimits.cc:    sdc->capacitanceLimit(cell, min_max,
+search/CheckCapacitanceLimits.cc:      corner_port->capacitanceLimit(min_max, limit1, exists1);
+search/CheckCapacitanceLimits.cc:					 float &capacitance1,
+search/CheckCapacitanceLimits.cc:    capacitance1 = cap;
+search/CheckCapacitanceLimits.cc:    float capacitance, limit, slack;
+search/CheckCapacitanceLimits.cc:    checkCapacitance(pin, corner, min_max, corner1, rf, capacitance, limit, slack);
+search/Search.tcl:     [-fields capacitance|slew|input_pin|net|src_attr]\
+search/Search.tcl:     [-max_capacitance] [-min_capacitance]\
+search/Search.tcl:      set max_capacitance 1
+search/Search.tcl:      set max_capacitance 0
+search/Search.tcl:      set min_capacitance 1
+search/Search.tcl:      set min_capacitance 0
+search/Search.tcl:	       -max_capacitance -min_capacitance \
+search/Search.tcl:    set max_capacitance [info exists flags(-max_capacitance)]
+search/Search.tcl:    set min_capacitance [info exists flags(-min_capacitance)]
+search/Search.tcl:  if { $max_capacitance } {
+search/Search.tcl:    report_capacitance_limits $net $corner "max" $violators $verbose $nosplit
+search/Search.tcl:  if { $min_capacitance } {
+search/Search.tcl:    report_capacitance_limits $net $corner "min" $violators $verbose $nosplit
+search/Search.tcl:proc report_capacitance_limits { net corner min_max violators verbose nosplit } {
+search/Search.tcl:  set pins [check_capacitance_limits $net $violators $corner $min_max]
+search/Search.tcl:    report_line "${min_max} capacitance"
+search/Search.tcl:        report_capacitance_limit_verbose $pin $corner $min_max
+search/Search.tcl:      report_capacitance_limit_short_header
+search/Search.tcl:        report_capacitance_limit_short $pin $corner $min_max
+search/Search.tcl:     [-fields capacitance|slew|input_pin|net|src_attr]\
+search/Search.tcl:  foreach field {capacitance slew} {
+search/Search.tcl:proc max_capacitance_check_slack_limit {} {
+search/Search.tcl:  return [expr [sta::max_capacitance_check_slack] / [sta::max_capacitance_check_limit]]
+search/Property.cc:capacitancePropertyValue(float cap,
+search/Property.cc:  else if (stringEqual(property, "capacitance")) {
+search/Property.cc:    float cap = port->capacitance(RiseFall::rise(), MinMax::max());
+search/Property.cc:    return capacitancePropertyValue(cap, sta);
+search/Property.cc:capacitancePropertyValue(float cap,
+search/Property.cc:  return PropertyValue(cap, sta->units()->capacitanceUnit());
+search/Sta.cc:  check_capacitance_limits_(nullptr),
+search/Sta.cc:  check_capacitance_limits_ = new CheckCapacitanceLimits(this);
+search/Sta.cc:  delete check_capacitance_limits_;
+search/Sta.cc:Sta::capacitance(const LibertyPort *port,
+search/Sta.cc:      cap = min_max->minMax(cap, corner_port->capacitance(rf, min_max, op_cond, op_cond));
+search/Sta.cc:    // Input port capacitance changed, so invalidate delay
+search/Sta.cc:  return port1->capacitance(RiseFall::rise(), MinMax::min())
+search/Sta.cc:    == port2->capacitance(RiseFall::rise(), MinMax::min())
+search/Sta.cc:    && port1->capacitance(RiseFall::rise(), MinMax::max())
+search/Sta.cc:    == port2->capacitance(RiseFall::rise(), MinMax::max())
+search/Sta.cc:    && port1->capacitance(RiseFall::fall(), MinMax::min())
+search/Sta.cc:    == port2->capacitance(RiseFall::fall(), MinMax::min())
+search/Sta.cc:    && port1->capacitance(RiseFall::fall(), MinMax::max())
+search/Sta.cc:    == port2->capacitance(RiseFall::fall(), MinMax::max());
+search/Sta.cc:  if (check_capacitance_limits_ == nullptr)
+search/Sta.cc:  return check_capacitance_limits_->checkCapacitanceLimits(net, violators,
+search/Sta.cc:  float capacitance, limit, slack;
+search/Sta.cc:  check_capacitance_limits_->checkCapacitance(pin, corner, min_max,
+search/Sta.cc:					      corner1, rf, capacitance,
+search/Sta.cc:				 pin, capacitance, limit, slack);
+search/Sta.cc:  float capacitance1, limit1, slack1;
+search/Sta.cc:  check_capacitance_limits_->checkCapacitance(pin, corner, min_max,
+search/Sta.cc:					      corner1, rf1, capacitance1,
+search/Sta.cc:				   pin, rf1, capacitance1,
+search/Sta.cc:		      float &capacitance,
+search/Sta.cc:  check_capacitance_limits_->checkCapacitance(pin, corner, min_max,
+search/Sta.cc:					      corner1, rf, capacitance,
+search/Sta.cc:                         float &capacitance,
+search/Sta.cc:  PinSeq pins = check_capacitance_limits_->checkCapacitanceLimits(nullptr, false,
+search/Sta.cc:  capacitance = 0.0;
+search/Sta.cc:    check_capacitance_limits_->checkCapacitance(pin, nullptr, MinMax::max(),
+search/Sta.cc:                                                corner, rf, capacitance, limit, slack);
+search/Search.i:check_capacitance_limits(Net *net,
+search/Search.i:max_capacitance_violation_count()
+search/Search.i:max_capacitance_check_slack()
+search/Search.i:  float capacitance;
+search/Search.i:  sta->maxCapacitanceCheck(pin, capacitance, slack, limit);
+search/Search.i:  return sta->units()->capacitanceUnit()->staToUser(slack);
+search/Search.i:max_capacitance_check_limit()
+search/Search.i:  float capacitance;
+search/Search.i:  sta->maxCapacitanceCheck(pin, capacitance, slack, limit);
+search/Search.i:  return sta->units()->capacitanceUnit()->staToUser(limit);
+search/Search.i:report_capacitance_limit_short_header()
+search/Search.i:report_capacitance_limit_short(Pin *pin,
+search/Search.i:report_capacitance_limit_verbose(Pin *pin,
+search/MakeTimingModel.cc:// Eval the driver pin model along its load capacitance
+search/MakeTimingModel.cc:                  std::make_shared<TableAxis>(TableAxisVariable::total_output_net_capacitance,
+search/MakeTimingModel.cc:      && table->axis1()->variable() == TableAxisVariable::total_output_net_capacitance)
+search/MakeTimingModel.cc:           && table->axis2()->variable() == TableAxisVariable::total_output_net_capacitance)
+search/MakeTimingModel.cc:           && table->axis3()->variable() == TableAxisVariable::total_output_net_capacitance)
+search/CheckCapacitanceLimits.hh:			// Corner is nullptr for no capacitance limit.
+search/CheckCapacitanceLimits.hh:			float &capacitance,
+search/CheckCapacitanceLimits.hh:			float &capacitance1,
+search/CheckCapacitanceLimits.hh:                         float &capacitance1,
+search/ReportPath.hh:  ReportField *fieldCapacitance() const { return field_capacitance_; }
+search/ReportPath.hh:  ReportField *field_capacitance_;
+search/ReportPath.cc:  delete field_capacitance_;
+search/ReportPath.cc:  field_capacitance_ = makeField("capacitance", "Cap", 6, false,
+search/ReportPath.cc:				 units_->capacitanceUnit(), true);
+search/ReportPath.cc:  field_capacitance_->setEnabled(report_cap);
+search/ReportPath.cc:      stringAppend(result, "%*s    \"capacitance\": %.3e,\n",
+search/ReportPath.cc:  // Don't show capacitance field for input pins.
+search/ReportPath.cc:  if (is_driver && field_capacitance_->enabled())
+search/ReportPath.cc:        if (field_capacitance_->enabled())
+search/ReportPath.cc:      else if (field == field_capacitance_)
+app/lib_7nm.lib:    variable_2 : total_output_net_capacitance;
+app/lib_7nm.lib:    variable_2 : total_output_net_capacitance;
+app/lib_7nm.lib:      max_capacitance : 0.04608;
+app/lib_7nm.lib:      capacitance : 0.000235911;
+app/lib_7nm.lib:      rise_capacitance : 0.000235636;
+app/lib_7nm.lib:      rise_capacitance_range (0.000128721, 0.000235636);
+app/lib_7nm.lib:      fall_capacitance : 0.000235911;
+app/lib_7nm.lib:      fall_capacitance_range (0.000127399, 0.000235911);
+app/lib_7nm.lib:      capacitance : 0.000235073;
+app/lib_7nm.lib:      rise_capacitance : 0.000235073;
+app/lib_7nm.lib:      rise_capacitance_range (0.000188506, 0.000235073);
+app/lib_7nm.lib:      fall_capacitance : 0.000231268;
+app/lib_7nm.lib:      fall_capacitance_range (0.000184205, 0.000231268);
+app/lib_7nm.lib:      max_capacitance : 0.04608;
+app/lib_7nm.lib:      capacitance : 0.000294956;
+app/lib_7nm.lib:      rise_capacitance : 0.000294956;
+app/lib_7nm.lib:      rise_capacitance_range (0.000149362, 0.000294956);
+app/lib_7nm.lib:      fall_capacitance : 0.000294734;
+app/lib_7nm.lib:      fall_capacitance_range (0.000149786, 0.000294734);
+app/lib_7nm.lib:      capacitance : 0.000293104;
+app/lib_7nm.lib:      rise_capacitance : 0.000293104;
+app/lib_7nm.lib:      rise_capacitance_range (0.000223006, 0.000293104);
+app/lib_7nm.lib:      fall_capacitance : 0.000287624;
+app/lib_7nm.lib:      fall_capacitance_range (0.000228468, 0.000287624);
+app/lib_7nm.lib:      capacitance : 0.000292258;
+app/lib_7nm.lib:      rise_capacitance : 0.000292258;
+app/lib_7nm.lib:      rise_capacitance_range (0.000234823, 0.000292258);
+app/lib_7nm.lib:      fall_capacitance : 0.000286351;
+app/lib_7nm.lib:      fall_capacitance_range (0.000232415, 0.000286351);
+app/lib_7nm.lib:      max_capacitance : 0.04608;
+app/lib_7nm.lib:      capacitance : 0.000351993;
+app/lib_7nm.lib:      rise_capacitance : 0.000344968;
+app/lib_7nm.lib:      rise_capacitance_range (0.000249145, 0.000344968);
+app/lib_7nm.lib:      fall_capacitance : 0.000351993;
+app/lib_7nm.lib:      fall_capacitance_range (0.000281171, 0.000351993);
+app/lib_7nm.lib:      capacitance : 0.000347354;
+app/lib_7nm.lib:      rise_capacitance : 0.000344366;
+app/lib_7nm.lib:      rise_capacitance_range (0.000284307, 0.000344366);
+app/lib_7nm.lib:      fall_capacitance : 0.000347354;
+app/lib_7nm.lib:      fall_capacitance_range (0.000281022, 0.000347354);
+app/lib_7nm.lib:      capacitance : 0.000296478;
+app/lib_7nm.lib:      rise_capacitance : 0.000296478;
+app/lib_7nm.lib:      rise_capacitance_range (0.000119592, 0.000296478);
+app/lib_7nm.lib:      fall_capacitance : 0.000296043;
+app/lib_7nm.lib:      fall_capacitance_range (0.000119763, 0.000296043);
+app/lib_7nm.lib:      max_capacitance : 0.04608;
+app/lib_7nm.lib:      capacitance : 0.000179097;
+app/lib_7nm.lib:      rise_capacitance : 0.000177478;
+app/lib_7nm.lib:      rise_capacitance_range (0.00015376, 0.000177478);
+app/lib_7nm.lib:      fall_capacitance : 0.000179097;
+app/lib_7nm.lib:      fall_capacitance_range (0.000155198, 0.000179097);
+app/lib_7nm.lib:      max_capacitance : 0.04608;
+app/lib_7nm.lib:      max_capacitance : 0.04608;
+app/lib_7nm.lib:      capacitance : 0.000177611;
+app/lib_7nm.lib:      rise_capacitance : 0.000177611;
+app/lib_7nm.lib:      rise_capacitance_range (0.000144665, 0.000177611);
+app/lib_7nm.lib:      fall_capacitance : 0.000177337;
+app/lib_7nm.lib:      fall_capacitance_range (0.000143437, 0.000177337);
+app/lib_7nm.lib:      capacitance : 0.000174131;
+app/lib_7nm.lib:      rise_capacitance : 0.000172252;
+app/lib_7nm.lib:      rise_capacitance_range (0.000148467, 0.000172252);
+app/lib_7nm.lib:      fall_capacitance : 0.000174131;
+app/lib_7nm.lib:      fall_capacitance_range (0.000151398, 0.000174131);
+app/lib_7nm.lib:      max_capacitance : 0.04608;
+app/lib_7nm.lib:      capacitance : 0.000177319;
+app/lib_7nm.lib:      rise_capacitance : 0.000177315;
+app/lib_7nm.lib:      rise_capacitance_range (0.000135637, 0.000177315);
+app/lib_7nm.lib:      fall_capacitance : 0.000177319;
+app/lib_7nm.lib:      fall_capacitance_range (0.00012891, 0.000177319);
+app/lib_7nm.lib:      max_capacitance : 0.04608;
+app/lib_7nm.lib:      capacitance : 0.000235777;
+app/lib_7nm.lib:      rise_capacitance : 0.000235545;
+app/lib_7nm.lib:      rise_capacitance_range (0.000129355, 0.000235545);
+app/lib_7nm.lib:      fall_capacitance : 0.000235777;
+app/lib_7nm.lib:      fall_capacitance_range (0.000127545, 0.000235777);
+app/lib_7nm.lib:      capacitance : 0.000234913;
+app/lib_7nm.lib:      rise_capacitance : 0.000234913;
+app/lib_7nm.lib:      rise_capacitance_range (0.000188612, 0.000234913);
+app/lib_7nm.lib:      fall_capacitance : 0.000231301;
+app/lib_7nm.lib:      fall_capacitance_range (0.000175729, 0.000231301);
+app/lib_7nm.lib:      max_capacitance : 0.04608;
+app/lib_7nm.lib:      capacitance : 0.000294286;
+app/lib_7nm.lib:      rise_capacitance : 0.000293669;
+app/lib_7nm.lib:      rise_capacitance_range (0.000149957, 0.000293669);
+app/lib_7nm.lib:      fall_capacitance : 0.000294286;
+app/lib_7nm.lib:      fall_capacitance_range (0.000149841, 0.000294286);
+app/lib_7nm.lib:      capacitance : 0.000292704;
+app/lib_7nm.lib:      rise_capacitance : 0.000292704;
+app/lib_7nm.lib:      rise_capacitance_range (0.000129564, 0.000292704);
+app/lib_7nm.lib:      fall_capacitance : 0.000287526;
+app/lib_7nm.lib:      fall_capacitance_range (0.000129508, 0.000287526);
+app/lib_7nm.lib:      capacitance : 0.000292295;
+app/lib_7nm.lib:      rise_capacitance : 0.000292295;
+app/lib_7nm.lib:      rise_capacitance_range (0.00023492, 0.000292295);
+app/lib_7nm.lib:      fall_capacitance : 0.000286333;
+app/lib_7nm.lib:      fall_capacitance_range (0.000222502, 0.000286333);
+app/lib_7nm.lib:      max_capacitance : 0.04608;
+app/lib_7nm.lib:      capacitance : 0.000294503;
+app/lib_7nm.lib:      rise_capacitance : 0.000286959;
+app/lib_7nm.lib:      rise_capacitance_range (0.000228163, 0.000286959);
+app/lib_7nm.lib:      fall_capacitance : 0.000294503;
+app/lib_7nm.lib:      fall_capacitance_range (0.000235185, 0.000294503);
+app/lib_7nm.lib:      capacitance : 0.000296483;
+app/lib_7nm.lib:      rise_capacitance : 0.000296483;
+app/lib_7nm.lib:      rise_capacitance_range (0.000112243, 0.000296483);
+app/lib_7nm.lib:      fall_capacitance : 0.000295838;
+app/lib_7nm.lib:      fall_capacitance_range (0.000112311, 0.000295838);
+app/lib_7nm.lib:      max_capacitance : 0.04608;
+app/lib_7nm.lib:      capacitance : 0.000410985;
+app/lib_7nm.lib:      rise_capacitance : 0.000398814;
+app/lib_7nm.lib:      rise_capacitance_range (0.000319044, 0.000398814);
+app/lib_7nm.lib:      fall_capacitance : 0.000410985;
+app/lib_7nm.lib:      fall_capacitance_range (0.000329276, 0.000410985);
+app/lib_7nm.lib:      capacitance : 0.000411842;
+app/lib_7nm.lib:      rise_capacitance : 0.000401537;
+app/lib_7nm.lib:      rise_capacitance_range (0.000125979, 0.000401537);
+app/lib_7nm.lib:      fall_capacitance : 0.000411842;
+app/lib_7nm.lib:      fall_capacitance_range (0.00012215, 0.000411842);
+app/lib_7nm.lib:      capacitance : 0.000415723;
+app/lib_7nm.lib:      rise_capacitance : 0.000415723;
+app/lib_7nm.lib:      rise_capacitance_range (0.00015544, 0.000415723);
+app/lib_7nm.lib:      fall_capacitance : 0.000414213;
+app/lib_7nm.lib:      fall_capacitance_range (0.000151326, 0.000414213);
+app/lib_7nm.lib:      max_capacitance : 0.04608;
+app/lib_7nm.lib:      capacitance : 0.000352852;
+app/lib_7nm.lib:      rise_capacitance : 0.000345162;
+app/lib_7nm.lib:      rise_capacitance_range (0.000249703, 0.000345162);
+app/lib_7nm.lib:      fall_capacitance : 0.000352852;
+app/lib_7nm.lib:      fall_capacitance_range (0.000281155, 0.000352852);
+app/lib_7nm.lib:      capacitance : 0.000354681;
+app/lib_7nm.lib:      rise_capacitance : 0.000354681;
+app/lib_7nm.lib:      rise_capacitance_range (0.000212736, 0.000354681);
+app/lib_7nm.lib:      fall_capacitance : 0.000354343;
+app/lib_7nm.lib:      fall_capacitance_range (0.000176139, 0.000354343);
+app/lib_7nm.lib:      capacitance : 0.000235193;
+app/lib_7nm.lib:      rise_capacitance : 0.000235193;
+app/lib_7nm.lib:      rise_capacitance_range (0.000188859, 0.000235193);
+app/lib_7nm.lib:      fall_capacitance : 0.000231756;
+app/lib_7nm.lib:      fall_capacitance_range (0.000175781, 0.000231756);
+app/lib_7nm.lib:      max_capacitance : 0.04608;
+app/lib_7nm.lib:      capacitance : 0.000294539;
+app/lib_7nm.lib:      rise_capacitance : 0.000286954;
+app/lib_7nm.lib:      rise_capacitance_range (0.000228159, 0.000286954);
+app/lib_7nm.lib:      fall_capacitance : 0.000294539;
+app/lib_7nm.lib:      fall_capacitance_range (0.000235076, 0.000294539);
+app/lib_7nm.lib:      capacitance : 0.000296865;
+app/lib_7nm.lib:      rise_capacitance : 0.000296865;
+app/lib_7nm.lib:      rise_capacitance_range (0.000111956, 0.000296865);
+app/lib_7nm.lib:      fall_capacitance : 0.000295897;
+app/lib_7nm.lib:      fall_capacitance_range (0.00011215, 0.000295897);
+app/lib_7nm.lib:      max_capacitance : 0.04608;
+app/lib_7nm.lib:      capacitance : 0.00041124;
+app/lib_7nm.lib:      rise_capacitance : 0.000398913;
+app/lib_7nm.lib:      rise_capacitance_range (0.000326767, 0.000398913);
+app/lib_7nm.lib:      fall_capacitance : 0.00041124;
+app/lib_7nm.lib:      fall_capacitance_range (0.000329212, 0.00041124);
+app/lib_7nm.lib:      capacitance : 0.000411851;
+app/lib_7nm.lib:      rise_capacitance : 0.000401771;
+app/lib_7nm.lib:      rise_capacitance_range (0.000125942, 0.000401771);
+app/lib_7nm.lib:      fall_capacitance : 0.000411851;
+app/lib_7nm.lib:      fall_capacitance_range (0.000122133, 0.000411851);
+app/lib_7nm.lib:      capacitance : 0.000416144;
+app/lib_7nm.lib:      rise_capacitance : 0.000416144;
+app/lib_7nm.lib:      rise_capacitance_range (0.00015513, 0.000416144);
+app/lib_7nm.lib:      fall_capacitance : 0.000414196;
+app/lib_7nm.lib:      fall_capacitance_range (0.000151343, 0.000414196);
+liberty/Wireload.cc:  capacitance_(0.0F),
+liberty/Wireload.cc:		   float capacitance,
+liberty/Wireload.cc:  capacitance_(capacitance),
+liberty/Wireload.cc:  capacitance_ = cap;
+liberty/Wireload.cc:  // Scale resistance and capacitance.
+liberty/Wireload.cc:  cap = length * capacitance_
+liberty/LibertyReaderPvt.hh:  // ccs receiver capacitance
+liberty/InternalPower.cc:  else if (var == TableAxisVariable::total_output_net_capacitance)
+liberty/InternalPower.cc:    || var == TableAxisVariable::related_out_total_output_net_capacitance;
+liberty/Units.cc:  capacitance_unit_("F"),
+liberty/Units.cc:  else if (stringEq(unit_name, "capacitance"))
+liberty/Units.cc:    return &capacitance_unit_;
+liberty/Units.cc:  capacitance_unit_ = *units.capacitanceUnit();
+liberty/TableModel.cc:      && axis1->variable() == TableAxisVariable::total_output_net_capacitance) {
+liberty/TableModel.cc:	   && axis2->variable()==TableAxisVariable::total_output_net_capacitance) {
+liberty/TableModel.cc:	   && axis3->variable()==TableAxisVariable::total_output_net_capacitance) {
+liberty/TableModel.cc:    // Table not dependent on capacitance.
+liberty/TableModel.cc:  else if (var == TableAxisVariable::total_output_net_capacitance)
+liberty/TableModel.cc:  else if (var == TableAxisVariable::related_out_total_output_net_capacitance)
+liberty/TableModel.cc:  return var == TableAxisVariable::total_output_net_capacitance
+liberty/TableModel.cc:    || var == TableAxisVariable::related_out_total_output_net_capacitance;
+liberty/TableModel.cc:  for (TableModel *model : capacitance_models_)
+liberty/TableModel.cc:  if ((segment + 1) * RiseFall::index_count > capacitance_models_.size())
+liberty/TableModel.cc:    capacitance_models_.resize((segment + 1) * RiseFall::index_count);
+liberty/TableModel.cc:  capacitance_models_[idx] = table_model;
+liberty/TableModel.cc:          && axis2 && axis2->variable() == TableAxisVariable::total_output_net_capacitance
+liberty/TableModel.cc:    || (axis1 && axis1->variable() == TableAxisVariable::total_output_net_capacitance
+liberty/TableModel.cc:  else if (var == TableAxisVariable::related_out_total_output_net_capacitance)
+liberty/TableModel.cc:    || var == TableAxisVariable::related_out_total_output_net_capacitance;
+liberty/TableModel.cc://    |    ---- total_output_net_capacitance = 0.20
+liberty/TableModel.cc://    |    |    related_out_total_output_net_capacitance = 0.10
+liberty/TableModel.cc:  {{TableAxisVariable::total_output_net_capacitance, "total_output_net_capacitance"},
+liberty/TableModel.cc:   {TableAxisVariable::equal_or_opposite_output_net_capacitance, "equal_or_opposite_output_net_capacitance"},
+liberty/TableModel.cc:   {TableAxisVariable::related_out_total_output_net_capacitance, "related_out_total_output_net_capacitance"},
+liberty/TableModel.cc:  case TableAxisVariable::total_output_net_capacitance:
+liberty/TableModel.cc:  case TableAxisVariable::related_out_total_output_net_capacitance:
+liberty/TableModel.cc:  case TableAxisVariable::equal_or_opposite_output_net_capacitance:
+liberty/TableModel.cc:    return units->capacitanceUnit();
+liberty/TableModel.cc:          && axis2 && axis2->variable() == TableAxisVariable::total_output_net_capacitance
+liberty/TableModel.cc:    || (axis1 && axis1->variable() == TableAxisVariable::total_output_net_capacitance
+liberty/LibertyReader.cc:  defineAttrVisitor("capacitance", &LibertyReader::visitCapacitance);
+liberty/LibertyReader.cc:  defineAttrVisitor("rise_capacitance", &LibertyReader::visitRiseCap);
+liberty/LibertyReader.cc:  defineAttrVisitor("fall_capacitance", &LibertyReader::visitFallCap);
+liberty/LibertyReader.cc:  defineAttrVisitor("rise_capacitance_range",
+liberty/LibertyReader.cc:  defineAttrVisitor("fall_capacitance_range",
+liberty/LibertyReader.cc:  defineAttrVisitor("max_capacitance", &LibertyReader::visitMaxCapacitance);
+liberty/LibertyReader.cc:  defineAttrVisitor("min_capacitance", &LibertyReader::visitMinCapacitance);
+liberty/LibertyReader.cc:  // ccs receiver capacitance
+liberty/LibertyReader.cc:  defineGroupVisitor("receiver_capacitance",
+liberty/LibertyReader.cc:  defineGroupVisitor("receiver_capacitance_rise",
+liberty/LibertyReader.cc:  defineGroupVisitor("receiver_capacitance_fall",
+liberty/LibertyReader.cc:  defineGroupVisitor("receiver_capacitance1_rise",
+liberty/LibertyReader.cc:  defineGroupVisitor("receiver_capacitance1_fall",
+liberty/LibertyReader.cc:  defineGroupVisitor("receiver_capacitance2_rise",
+liberty/LibertyReader.cc:  defineGroupVisitor("receiver_capacitance2_fall",
+liberty/LibertyReader.cc:    library_->units()->capacitanceUnit()->setScale(cap_scale_);
+liberty/LibertyReader.cc:    library_->units()->capacitanceUnit()->setScale(cap_scale_);
+liberty/LibertyReader.cc:// Group that encloses receiver_capacitance1/2 etc groups.
+liberty/LibertyReader.cc:// For receiver_capacitance groups with mulitiple segments this
+liberty/LibertyReader.cc:    libWarn(1218, group, "receiver_capacitance group not in timing or pin group.");
+liberty/LibertyReader.cc:    TableAxisPtr cap_axis = make_shared<TableAxis>(TableAxisVariable::total_output_net_capacitance,
+liberty/LibertyReader.cc:        // Do not clobber member port capacitances by setting the capacitance
+liberty/LibertyReader.cc:      port->capacitance(tr, min_max, cap, exists);
+liberty/LinearModel.cc:  const Unit *cap_unit = units->capacitanceUnit();
+liberty/Liberty.i:capacitance(Corner *corner,
+liberty/Liberty.i:  return sta->capacitance(self, corner, min_max);
+liberty/Liberty.cc:  capacitance_.setValue(rf, min_max, cap);
+liberty/Liberty.cc:LibertyPort::capacitance() const
+liberty/Liberty.cc:  capacitance_.maxValue(cap, exists);
+liberty/Liberty.cc:LibertyPort::capacitance(const MinMax *min_max) const
+liberty/Liberty.cc:  return capacitance_.value(min_max);
+liberty/Liberty.cc:LibertyPort::capacitance(const RiseFall *rf,
+liberty/Liberty.cc:  capacitance_.value(rf, min_max, cap, exists);
+liberty/Liberty.cc:LibertyPort::capacitance(const RiseFall *rf,
+liberty/Liberty.cc:  capacitance_.value(rf, min_max, cap, exists);
+liberty/Liberty.cc:LibertyPort::capacitance(const RiseFall *rf,
+liberty/Liberty.cc:    // Scaled capacitance is not derated because scale factors are wrt
+liberty/Liberty.cc:      return scaled_port->capacitance(rf, min_max);
+liberty/Liberty.cc:  float cap = capacitance(rf, min_max);
+liberty/Liberty.cc:LibertyPort::capacitanceIsOneValue() const
+liberty/Liberty.cc:  return capacitance_.isOneValue();
+liberty/Liberty.cc:LibertyPort::capacitanceLimit(const MinMax *min_max,
+liberty/LibertyWriter.cc:  cap_unit_(lib->units()->capacitanceUnit())
+liberty/LibertyWriter.cc:  const Unit *cap_unit = library_->units()->capacitanceUnit();
+liberty/LibertyWriter.cc:    fprintf(stream_, "  default_max_capacitance         : %s;\n",
+liberty/LibertyWriter.cc:  fprintf(stream_, "      capacitance : %s;\n",
+liberty/LibertyWriter.cc:          cap_unit_->asString(port->capacitance(), 4));
+liberty/LibertyWriter.cc:  port->capacitanceLimit(MinMax::max(), limit, exists);
+liberty/LibertyWriter.cc:    fprintf(stream_, "      max_capacitance : %s;\n",

@@ -11,17 +11,17 @@ module top (
   // Note: the port names in the instance must match your cell definition.
   
 
-  wire temp;
+  // wire temp;
   nand2x1_sc NAND1 (
     .A   (A1),
     .B   (A2),
-    .Y  (temp)
-  );
-
-  nand2x1_sc NAND1 (
-    .A   (temp),
-    .B   (temp),
     .Y  (ZN)
   );
+
+  // nand2x1_sc NAND1 (
+    // .A   (temp),
+    // .B   (temp),
+    // .Y  (ZN)
+  // );
 endmodule
 

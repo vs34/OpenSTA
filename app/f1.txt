@@ -1,0 +1,54 @@
+{MODLE}}}} nand2x1_sc
+OpenSTA 2.6.0 929ddcbcb1 Copyright (c) 2025, Parallax Software, Inc.
+License GPLv3: GNU GPL version 3 <http://gnu.org/licenses/gpl.html>
+
+This is free software, and you are free to change and redistribute it
+under certain conditions; type `show_copying' for details. 
+This program comes with ABSOLUTELY NO WARRANTY; for details type `show_warranty'.
+ ########### DEBUG ###########
+this pin NAND1/B
+gate name nand2x1_sc
+load cap of the 2.34913e-16
+ ########### DEBUG ###########
+ ########### DEBUG ###########
+this pin NAND1/A
+gate name nand2x1_sc
+load cap of the 2.35777e-16
+ ########### DEBUG ###########
+ ########### DEBUG ###########
+this pin NAND1/Y
+gate name nand2x1_sc
+load cap of the 0
+ ########### DEBUG ###########
+ ########### DEBUG ###########
+this pin ZN
+gate name top
+Startpoint: A2 (input port clocked by virtual_clk)
+Endpoint: ZN (output port clocked by virtual_clk)
+Path Group: virtual_clk
+Path Type: max
+
+     Delay       Time   Description
+---------------------------------------------------------------
+   0.00000    0.00000   clock virtual_clk (rise edge)
+   0.00000    0.00000   clock network delay (ideal)
+   1.00000    1.00000 v input external delay
+   0.00000    1.00000 v A2 (in)
+   0.10484    1.10484 ^ NAND1/Y (nand2x1_sc)
+   0.00000    1.10484 ^ ZN (out)
+              1.10484   data arrival time
+
+   1.00000    1.00000   clock virtual_clk (rise edge)
+   0.00000    1.00000   clock network delay (ideal)
+   0.00000    1.00000   clock reconvergence pessimism
+   0.00000    1.00000   output external delay
+              1.00000   data required time
+---------------------------------------------------------------
+              1.00000   data required time
+             -1.10484   data arrival time
+---------------------------------------------------------------
+             -0.10484   slack (VIOLATED)
+
+
+load cap of the -1
+ ########### DEBUG ###########

@@ -183,7 +183,7 @@ MakeTimingModel::findArea()
 }
 
 void
-MakeTimingModel::makePorts()
+MakeTimingModel::makePorts() // no one is calling this one, dont know wth is load cap
 {
   const DcalcAnalysisPt *dcalc_ap = corner_->findDcalcAnalysisPt(min_max_);
   Instance *top_inst = network_->topInstance();
