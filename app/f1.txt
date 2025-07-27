@@ -5,24 +5,23 @@ License GPLv3: GNU GPL version 3 <http://gnu.org/licenses/gpl.html>
 This is free software, and you are free to change and redistribute it
 under certain conditions; type `show_copying' for details. 
 This program comes with ABSOLUTELY NO WARRANTY; for details type `show_warranty'.
- ########### DEBUG ###########
-this pin NAND1/B
-gate name nand2x1_sc
-load cap of the 2.34913e-16
- ########### DEBUG ###########
- ########### DEBUG ###########
-this pin NAND1/A
-gate name nand2x1_sc
-load cap of the 2.35777e-16
- ########### DEBUG ###########
- ########### DEBUG ###########
-this pin NAND1/Y
-gate name nand2x1_sc
-load cap of the 0
- ########### DEBUG ###########
- ########### DEBUG ###########
-this pin ZN
-gate name top
+the cap A  : 2.35777e-16
+the cap B  : 2.34913e-16
+the cap Zn : 0
+load cap is : 2.35777e-16
+normalized load is : 0.5
+normalized slew_a is : 0.0349206
+normalized slew_b is : 0.0507936
+skew is : -1e-09
+normalized skew is : 0
+Loading json ... done. elapsed time: 0.001013 s
+Building model ... done. elapsed time: 0.002201 s
+Running test 1 of 1 ... done. elapsed time: 0.000113 s
+Loading, constructing, testing of nand2x1_model.json took 0.003440 s overall.
+index is 1 value is 1.06919e-10
+old annotation 1.14248e-09 1.10484e-09 1.42487e-10 1.03208e-10
+new annotation 1.14248e-09 1.06919e-10 1.42487e-10 1.03208e-10
+[UPDATE] annotaion updated for NAND1/Y
 Startpoint: A2 (input port clocked by virtual_clk)
 Endpoint: ZN (output port clocked by virtual_clk)
 Path Group: virtual_clk
@@ -34,9 +33,9 @@ Path Type: max
    0.00000    0.00000   clock network delay (ideal)
    1.00000    1.00000 v input external delay
    0.00000    1.00000 v A2 (in)
-   0.10484    1.10484 ^ NAND1/Y (nand2x1_sc)
-   0.00000    1.10484 ^ ZN (out)
-              1.10484   data arrival time
+  -0.89308    0.10692 ^ NAND1/Y (nand2x1_sc)
+   0.00000    0.10692 ^ ZN (out)
+              0.10692   data arrival time
 
    1.00000    1.00000   clock virtual_clk (rise edge)
    0.00000    1.00000   clock network delay (ideal)
@@ -45,10 +44,19 @@ Path Type: max
               1.00000   data required time
 ---------------------------------------------------------------
               1.00000   data required time
-             -1.10484   data arrival time
+             -0.10692   data arrival time
 ---------------------------------------------------------------
-             -0.10484   slack (VIOLATED)
+              0.89308   slack (MET)
 
 
-load cap of the -1
- ########### DEBUG ###########
+Group                  Internal  Switching    Leakage      Total
+                          Power      Power      Power      Power (Watts)
+----------------------------------------------------------------
+Sequential             0.00e+00   0.00e+00   0.00e+00   0.00e+00   0.0%
+Combinational          5.29e-09   4.90e-07   3.30e-10   4.96e-07 100.0%
+Clock                  0.00e+00   0.00e+00   0.00e+00   0.00e+00   0.0%
+Macro                  0.00e+00   0.00e+00   0.00e+00   0.00e+00   0.0%
+Pad                    0.00e+00   0.00e+00   0.00e+00   0.00e+00   0.0%
+----------------------------------------------------------------
+Total                  5.29e-09   4.90e-07   3.30e-10   4.96e-07 100.0%
+                           1.1%      98.9%       0.1%

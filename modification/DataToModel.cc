@@ -19,6 +19,8 @@ DataToModel::DataToModel(sta::Vertex* zn)
       modified_arrival_A({-1.0f, -1.0f, -1.0f, -1.0f}),
       modified_arrival_B({-1.0f, -1.0f, -1.0f, -1.0f}),
       modified_arrival_Zn({-1.0f, -1.0f, -1.0f, -1.0f}),
+      input_delay_A({-1.0f, -1.0f, -1.0f, -1.0f}),
+      input_delay_B({-1.0f, -1.0f, -1.0f, -1.0f}),
       modified_slew_A({-1.0f, -1.0f}),
       modified_slew_B({-1.0f, -1.0f}),
       modified_slew_Zn({-1.0f, -1.0f})
@@ -43,6 +45,14 @@ void DataToModel::setOriginalArrivalB(const float* arrival) {
 }
 void DataToModel::setOriginalArrivalZn(const float* arrival) {
     std::copy(arrival, arrival + 4, original_arrival_Zn.begin());
+}
+
+void DataToModel::setInputDelayA(const float* arrival) {
+    std::copy(arrival, arrival + 4, input_delay_A.begin());
+}
+
+void DataToModel::setInputDelayB(const float* arrival) {
+    std::copy(arrival, arrival + 4, input_delay_B.begin());
 }
 
 void DataToModel::setSlewA(float rise, float fall) { slew_A = {rise, fall}; }
@@ -75,6 +85,8 @@ float* DataToModel::getOriginalArrivalA() { return original_arrival_A.data(); }
 float* DataToModel::getOriginalArrivalB() { return original_arrival_B.data(); }
 float* DataToModel::getOriginalArrivalZn() { return original_arrival_Zn.data(); }
 
+float* DataToModel::getInputDelayA() { return input_delay_A.data(); }
+float* DataToModel::getInputDelayB() { return input_delay_B.data(); }
 std::pair<float, float> DataToModel::getSlewA() const { return slew_A; }
 std::pair<float, float> DataToModel::getSlewB() const { return slew_B; }
 std::pair<float, float> DataToModel::getSlewZn() const { return slew_Zn; }

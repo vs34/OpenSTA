@@ -19,11 +19,13 @@ set_input_delay 0.0 -clock virtual_clk [get_ports A1]
 set_input_delay 1.0 -clock virtual_clk [get_ports A2]
 
 # 7) Set load at ZN (fake output environment)
-set_load 0.020 [get_ports ZN]              ;# 0.1 fF cap
+set_load 0.0236 [get_ports ZN]              ;# 0.5 in the ml model
 
 set_output_delay 0.0 -clock virtual_clk [get_ports ZN]
 
 # 8) Report max delay paths
 report_checks -rise_through ZN -path_delay max -format full -digits 5
+
+# report_power
 
 exit

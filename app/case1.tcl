@@ -19,7 +19,7 @@ set_input_delay 1.0 -clock virtual_clk [get_ports A1]
 set_input_delay 0.0 -clock virtual_clk [get_ports A2]
 
 # 7) Set load at ZN (fake output environment)
-set_load 0.020 [get_ports ZN]
+set_load 0.0236 [get_ports ZN]
 set_output_delay 0.0 -clock virtual_clk [get_ports ZN]
 
 # 8) Report max delay paths

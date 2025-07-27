@@ -57,57 +57,19 @@ void StaInterface::setSlew(sta::Vertex *vertex, std::pair<float, float> newslew)
 }
 
 // Get the load capacitance for a pin by querying the LibertyPort.
-// float StaInterface::getLoadCapacitance(sta::Vertex *vertex) {
-//     if (vertex == nullptr) // should not happen in real 
-//         return -1.0f;
-//     sta::Pin* pin = vertex->pin();
-//     sta::LibertyPort *lib_port = net_netlist_->libertyPort(pin);
-//     if (lib_port == nullptr) // checking
-//         return -1.0f;
-//     return lib_port->capacitance();
-// }
+ float StaInterface::getLoadCapacitance(sta::Vertex *vertex) {
+     if (vertex == nullptr) // should not happen in real 
+         return -1.0f;
+     sta::Pin* pin = vertex->pin();
+     sta::LibertyPort *lib_port = net_netlist_->libertyPort(pin);
+     if (lib_port == nullptr) // checking
+         return -1.0f;
+     return lib_port->capacitance();
+ }
 
 // This is the corrected implementation for your class method.
 // It assumes your StaInterface class has the member 'const sta::StaState* god_class_;'
 
-float StaInterface::getLoadCapacitance(sta::Vertex *vertex)
-{
-  if (vertex == nullptr) {
-    return -1.0f; // Return an error code
-  }
-
-  // 1. Get the Pin from the Vertex.
-  sta::Pin* pin = vertex->pin();
-  if (pin == nullptr) {
-    return -1.0f;
-  }
-  
-  // 2. Get the delay calculator from the StaState object.
-  // We use the 'god_class_' member variable of your StaInterface class.
-  const sta::Dcalc* dcalc = god_class_->dcalc();
-
-  // 3. Define which timing corner and analysis condition to use.
-  const sta::Corner* corner = god_class_->corners()->defaultCorner();
-  const sta::MinMax* min_max = sta::MinMax::max();
-
-  if (corner == nullptr) {
-      // No default corner found, cannot proceed.
-      return -1.0f;
-  }
-  
-  // 4. Find the specific analysis point for this corner and condition.
-  const sta::DcalcAnalysisPt* dcalc_ap = corner->findDcalcAnalysisPt(min_max);
-  if (dcalc_ap == nullptr) {
-      // Analysis point not found for this corner.
-      return -1.0f;
-  }
-
-  // 5. Call the loadCap function with the Pin and analysis point
-  //    to get the final load capacitance.
-  float load_cap = dcalc->loadCap(pin, dcalc_ap);
-
-  return load_cap;
-}
 
 // Sets the annotation array for a vertex.
 void StaInterface::setAnnotationArray(sta::Vertex *vertex, float *new_annotation, float *old_annotation) {
@@ -122,7 +84,7 @@ void StaInterface::setAnnotationArray(sta::Vertex *vertex, float *new_annotation
                 std::cout << "index is " << a << " value is " << new_annotation[a] << '\n';
                 new_arrivals[a] = new_annotation[a];
                 anotation_update = true;
-                arrivals[a] = arrivals[a];
+                // arrivals[a] = arrivals[a];
             }
             else{
                 new_arrivals[a] = arrivals[a];
@@ -238,13 +200,33 @@ bool StaInterface::updateAnnotation_out_pin(DataToModel *data){
     }
     data->setLoadCapA(getLoadCapacitance(data->getA())); // no need for this 
     data->setLoadCapB(getLoadCapacitance(data->getB())); // remove while opti.
-    // debugCout(data->getA());
-    std::cout << "the cap A  : " << getLoadCapacitance(data->getA()) << '\n'; // the Zn cap is 0 i thought it would be same for A,B
-    // debugCout(data->getB());
-    std::cout << "the cap B  : " << getLoadCapacitance(data->getB()) << '\n';
-    // debugCout(data->getZn());
-    std::cout << "the cap Zn : " << getLoadCapacitance(data->getZn()) << '\n';
 
+    std:: cout << "cheking the annotaiton thiking that we could get input delay applyed by .tcl there\n";
+
+
+    std::cout << "cheking for pin A " ;
+    sta::VertexInEdgeIterator edgeA_iter(data->getA(), sta_graph_);
+    while (edgeA_iter.hasNext()) {
+        sta::Edge *nextA_edge = edgeA_iter.next();
+        sta::Vertex *prev_vertex = nextA_edge->from(sta_graph_);
+        float* temp = getAnnotationArray(prev_vertex);
+        data->setInputDelayA(temp);
+        for (int a = 0 ; a < 4 ; a++)
+                std::cout << temp[a] << ' ';
+        std::cout << '\n';
+    }
+
+    std::cout << "cheking for pin B " ;
+    sta::VertexInEdgeIterator edgeB_iter(data->getB(), sta_graph_);
+    while (edgeB_iter.hasNext()) {
+        sta::Edge *nextB_edge = edgeB_iter.next();
+        sta::Vertex *prev_vertex = nextB_edge->from(sta_graph_);
+        float* temp = getAnnotationArray(prev_vertex);
+        data->setInputDelayB(temp);
+        for (int a = 0 ; a < 4 ; a++)
+                std::cout << temp[a] << ' ';
+        std::cout << '\n';
+    }
 
     data->setOriginalArrivalA(getAnnotationArray(data->getA()));
     data->setOriginalArrivalB(getAnnotationArray(data->getB()));

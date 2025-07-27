@@ -26,6 +26,8 @@ public:
     std::array<float, 4> original_arrival_A;
     std::array<float, 4> original_arrival_B;
     std::array<float, 4> original_arrival_Zn;
+    std::array<float, 4> input_delay_A;
+    std::array<float, 4> input_delay_B;
     std::pair<float, float> slew_A;
     std::pair<float, float> slew_B;
     std::pair<float, float> slew_Zn;
@@ -47,6 +49,8 @@ public:
     void setOriginalArrivalA(const float* arrival);
     void setOriginalArrivalB(const float* arrival);
     void setOriginalArrivalZn(const float* arrival);
+    void setInputDelayA(const float* arrival);
+    void setInputDelayB(const float* arrival);
     void setSlewA(float rise, float fall);
     void setSlewB(float rise, float fall);
     void setSlewZn(float rise, float fall);
@@ -68,6 +72,8 @@ public:
     float* getOriginalArrivalA();
     float* getOriginalArrivalB();
     float* getOriginalArrivalZn();
+    float* getInputDelayA();
+    float* getInputDelayB();
     std::pair<float, float> getSlewA() const;
     std::pair<float, float> getSlewB() const;
     std::pair<float, float> getSlewZn() const;

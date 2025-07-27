@@ -262,10 +262,17 @@ void MlModel::Modify_out(DataToModel* data) {
     float* outA = new float[4]{-1,-1,-1,-1};
     float* sA   = new float[2]{-1,-1};
 
-    decodeOutput(cfg, pA, outA, sA);
+    decodeOutput(cfg, pA, outA, sA); // out a is rise delay (Tr) (from 20% to 80%)
 
     // std::cout << "new annotation for A " << *outA << ' ' << *sA << '\n';
     // std::cout << "new annotation for B " << *outB << ' ' << *sB << '\n';
+    float* input_A = data->getInputDelayA(); // getting arrival of zn max(input_a_delay,input_b_delay) + Tr
+    float* input_B = data->getInputDelayB();
+    for (int a = 0 ; a < 4 ; a++){
+        if (outA[a] != -1){
+            outA[a] += std::max(input_A[a],input_B[a]);
+        }
+    }
     data->setModifiedArrivalZn(outA);
     data->setModifiedSlewZn(sA[0], sA[1]);
 
